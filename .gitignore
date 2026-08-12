@@ -1,0 +1,15 @@
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.task/
+node_modules/
+.lola/
+*.log
+.claude/
+.superpowers/
+
+# Working artifacts (never committed)
+docs/superpowers/

@@ -1,0 +1,44 @@
+header:
+  schema-version: "0.1.0"
+  version: "0.1.0"
+  last-updated: "2026-01-01"
+
+slug: my-feature
+title: "My Feature"
+features:
+  - "org/repo#99"
+description: >-
+  One paragraph describing what this initiative is and why it exists.
+
+stakeholders:
+  - role: "Product Owner"
+    handle: "@handle"
+  - role: "Requestor"
+    handle: "@handle"
+    approver: true
+  - role: "Stakeholder Representative"
+    handle: "@handle"
+
+personas:
+  - "Example Persona"
+
+scope:
+  in_scope:
+    - "Thing we are building"
+  out_of_scope:
+    - "Thing we are not building"
+
+nonfunctional_requirements:
+  - id: NFR-MF-001
+    title: "Example NFR"
+    description: >-
+      Describe the non-functional requirement here.
+
+kpis:
+  - metric: "Example metric this initiative moves"
+    target: "Qualitative direction is acceptable in Draft; add a number once validated with stakeholders."
+    baseline: "Current value or state, if known"
+
+open_questions:
+  - question: >-
+      An open question that needs resolution before or during delivery.
