@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -20,7 +21,7 @@ jobs:
         with:
           version: "v0.17.0"
       - name: Login to CUE Central Registry
-        run: cue login --token=${{ secrets.CUE_REG_TOKEN }}
+        uses: cue-labs/registry-login-action@66d40052b0206031343e17173425fa10508968d0 # v1.0.3
       - name: Publish module
         env:
           REF_NAME: ${{ github.ref_name }}
