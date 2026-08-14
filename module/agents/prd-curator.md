@@ -20,9 +20,9 @@ left dangling rather than closed out.
 
 ## Source Documents
 
-PRD family file paths (parent + phase YAML) provided in the delegation
-prompt, plus
-`../skills/prd-review/references/reviewer-protocol.md`.
+PRD family file paths (parent + phase YAML) and the resolved
+`reviewer-protocol.md` path, both provided in the delegation prompt by
+the dispatching `prd-review` skill (see its `$SKILL_DIR` convention).
 
 ## Phased Process
 

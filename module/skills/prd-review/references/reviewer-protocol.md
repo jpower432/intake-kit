@@ -83,7 +83,7 @@ no prose before or after it.
 {
   "agent": "prd-guard",
   "sections_read": ["parent.personas", "phase1.functional_requirements"],
-  "verdict": "APPROVE | REQUEST CHANGES",
+  "verdict": "APPROVE | REQUEST_CHANGES",
   "findings": [
     {
       "severity": "BLOCKER|WARNING|INFO",
@@ -102,9 +102,10 @@ no prose before or after it.
   ellipses, no paraphrase, no stitching two passages together.
 - A clean review returns `"verdict": "APPROVE", "findings": []` — never
   manufacture findings to justify review effort.
-- `verdict` here is per-agent and informational only. The council-level
-  verdict (BLOCKED / NEEDS REVISION / APPROVED) is computed separately by
-  `SKILL.md` from the aggregated severities of all agents' surviving
+- `verdict` here is per-agent and informational only — it does not map
+  1:1 onto the council-level ternary. The council-level verdict (BLOCKED
+  / NEEDS REVISION / APPROVED) is computed separately by `SKILL.md` from
+  the aggregated severities of all agents' surviving
   findings.
 
 ## Output

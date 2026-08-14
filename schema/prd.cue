@@ -98,6 +98,8 @@ package prds
 	// A document is either a phase (has `phase`) or a parent (does not).
 	// Each shape has its own required fields — `header` alone is not a
 	// valid document either way.
+	// Discriminate parent vs phase document shape: `!= _|_` means the
+	// field is set (not bottom/undefined).
 	if phase != _|_ {
 		workflow:                 #Workflow
 		functional_requirements: [...#FunctionalRequirement] & [_, ...]

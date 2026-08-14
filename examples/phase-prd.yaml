@@ -4,7 +4,7 @@ header:
   last-updated: "2026-01-01"
   parent: my-feature
 
-slug: my-feature
+slug: my-feature-phase1
 phase: "Phase 1 — Example Phase Name"
 
 stakeholders:
@@ -27,14 +27,14 @@ workflow:
     - label: "Step One"
       description: "What happens in this step."
       implements:
-        - FR-MF-001
+        - FR-MFP-001
 
 functional_requirements:
-  - id: FR-MF-001
+  - id: FR-MFP-001
     title: "Example Functional Requirement"
     persona: "Example Persona"
     acceptance_criteria:
-      - id: AC-MF-001-01
-        description: "First acceptance criterion for FR-MF-001."
-      - id: AC-MF-001-02
-        description: "Second acceptance criterion for FR-MF-001."
+      - id: AC-MFP-001-01
+        description: "First acceptance criterion for FR-MFP-001."
+      - id: AC-MFP-001-02
+        description: "Second acceptance criterion for FR-MFP-001."

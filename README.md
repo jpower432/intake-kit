@@ -55,7 +55,7 @@ The `prd-review` skill runs in any AI coding assistant that supports Lola skills
 `--schema <path>`. A structural violation (bad ID format, invalid enum, disallowed field) blocks immediately with the
 raw `cue vet` error — no point reviewing behavior in a file that doesn't even parse against the schema.
 
-**Phase 2 — 5 has specialist agents** then review content and quality, by default in parallel (pass `--serial` to run them
+**Phases 2 – 4 dispatch 5 specialist agents** to review content and quality, by default in parallel (pass `--serial` to run them
 sequentially in one context instead — slower, but roughly 1/5th the token cost, since the PRD text is read once
 instead of once per agent):
 
