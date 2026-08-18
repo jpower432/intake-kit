@@ -79,15 +79,17 @@ catch (they read for behavior and quality, not structural validity).
    `module/AGENTS.md`).
 2. Otherwise, resolve the schema, registry first:
    - **Registry** (primary): the schema is published to the CUE Central
-     Registry at the module path in this module's own
-     `cue.mod/module.cue` (`github.com/unbound-force/intake-kit@v0`,
-     definition `#PRDDocument` in the `prds` package at the module
-     root, imported as
-     `github.com/unbound-force/intake-kit:prds`). Attempt to
-     resolve and vet against it. If the module isn't published yet, the
-     version doesn't exist, or the registry is unreachable (offline,
-     airgapped, no `cue login`), this attempt fails — that is expected
-     and not an error; fall through to the next option.
+     Registry from this module's `cue.mod/module.cue`
+     (`github.com/unbound-force/intake-kit@v0`, definition
+     `#PRDDocument` in the `prds` package at the module root). The
+     caller needs no local CUE module of their own — vet directly
+     against the registry import like the following command:
+     ```
+     cue vet <prd-file> github.com/unbound-force/intake-kit@<version>:prds -d '#PRDDocument'
+     ```
+     If the module isn't published yet, the registry is unreachable,
+     this attempt fails — that is expected and not an error; fall
+     through to the next option.
    - **`--schema <path>`** (fallback): if given, vet against that local
      file's `#PRDDocument` definition instead.
    - **Neither resolves**: skip this phase and note in the final report:
