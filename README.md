@@ -81,7 +81,7 @@ module/                  ← installable Lola module
   agents/                ← standalone review agent definitions (prd-guard, prd-adversary, ...)
   skills/prd-review/     ← orchestration skill (schema check + agent dispatch + verdict)
   commands/              ← command entry points
-schema/                  ← CUE schema (published to registry)
+prd.cue                  ← CUE schema (published to registry)
 cue.mod/                 ← CUE module definition
 examples/                ← example PRD YAML files
 ```
