@@ -25,4 +25,4 @@ PRDs are structured YAML validated against a CUE schema. The document model uses
 - PRDs do not name unmade implementation choices in Draft state — but naming an external compatibility constraint the business has already committed to (a required data model, wire format, or certification) is expected, not a defect.
 - Requirements describe behavior, not implementation.
 - Each agent owns its own scope — findings from different agents may overlap in location but are not deduplicated.
-- PRD content is only reviewed for behavior and quality after it passes CUE schema conformance (`schema/prd.cue`, `#PRDDocument`) — structural violations block before the 5 review agents run.
+- PRD content is only reviewed for behavior and quality after it passes CUE schema conformance (`prd.cue`, `#PRDDocument`) — structural violations block before the 5 review agents run.

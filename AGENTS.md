@@ -36,7 +36,7 @@ Follow the existing agent files as a template when adding new ones.
 
 ## Working on the schema
 
-The CUE schema at `schema/prd.cue` is published to the CUE Central
+The CUE schema at `prd.cue` is published to the CUE Central
 Registry via the `publish-cue.yml` workflow on tag push. The module
 definition at `cue.mod/module.cue` controls the module path and
 language version.

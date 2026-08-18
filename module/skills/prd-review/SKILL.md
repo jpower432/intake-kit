@@ -34,7 +34,12 @@ Example:
 ```
 /prd-review prds/my-feature.yaml prds/my-feature-phase1.yaml
 /prd-review --serial prds/my-feature.yaml prds/my-feature-phase1.yaml
-/prd-review --schema schema/prd.cue prds/my-feature.yaml prds/my-feature-phase1.yaml
+```
+
+`--schema <path>` is optional — only needed if the registry is
+unreachable and you want a local fallback:
+```
+/prd-review --schema prd.cue prds/my-feature.yaml prds/my-feature-phase1.yaml
 ```
 
 If no paths are given, ask for them before proceeding.
@@ -76,9 +81,9 @@ catch (they read for behavior and quality, not structural validity).
    - **Registry** (primary): the schema is published to the CUE Central
      Registry at the module path in this module's own
      `cue.mod/module.cue` (`github.com/unbound-force/intake-kit@v0`,
-     definition `#PRDDocument` in the `prds` package under the `schema`
-     directory, imported as
-     `github.com/unbound-force/intake-kit/schema:prds`). Attempt to
+     definition `#PRDDocument` in the `prds` package at the module
+     root, imported as
+     `github.com/unbound-force/intake-kit:prds`). Attempt to
      resolve and vet against it. If the module isn't published yet, the
      version doesn't exist, or the registry is unreachable (offline,
      airgapped, no `cue login`), this attempt fails — that is expected

@@ -23,7 +23,7 @@ jobs:
       - name: Validate examples
         run: |
           for f in examples/*.yaml; do
-            cue vet schema/prd.cue "$f" -d '#PRDDocument'
+            cue vet prd.cue "$f" -d '#PRDDocument'
           done
       - name: Login to CUE Central Registry
         uses: cue-labs/registry-login-action@66d40052b0206031343e17173425fa10508968d0 # v1.0.3
