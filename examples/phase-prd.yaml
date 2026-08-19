@@ -10,7 +10,7 @@ phase: "Phase 1 — Example Phase Name"
 stakeholders:
   - role: "Technical Owner"
     handle: "@handle"
-  - role: "Technical Owner Understudy"
+  - role: "Alternate Technical Owner"
     handle: "@handle"
 
 state:
