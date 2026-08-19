@@ -39,7 +39,7 @@ See `examples/` for the full field set.
 Requires [CUE](https://cuelang.org/docs/introduction/installation/).
 
 ```bash
-cue vet prd.cue your-prd.yaml
+cue vet prd.cue -d '#PRDDocument' your-prd.yaml
 ```
 
 ## Running the Review Council

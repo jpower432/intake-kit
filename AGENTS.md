@@ -13,7 +13,7 @@ module/                            ← installable module (what users get)
     SKILL.md                       ← orchestration skill
     references/                    ← reviewer protocol and shared refs
   commands/prd-review.md           ← command entry point
-schema/                            ← CUE schema (published to CUE registry)
+prd.cue                            ← CUE schema (published to CUE registry)
 cue.mod/                           ← CUE module definition
 examples/                          ← example PRD YAML files
 .github/workflows/                 ← CI (CUE registry publish)

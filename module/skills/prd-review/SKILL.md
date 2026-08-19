@@ -85,7 +85,7 @@ catch (they read for behavior and quality, not structural validity).
      caller needs no local CUE module of their own — vet directly
      against the registry import like the following command:
      ```
-     cue vet <prd-file> github.com/unbound-force/intake-kit@<version>:prds -d '#PRDDocument'
+     cue vet github.com/unbound-force/intake-kit@<version>:prds -d '#PRDDocument' <prd-file>
      ```
      If the module isn't published yet, the registry is unreachable,
      this attempt fails — that is expected and not an error; fall
@@ -98,7 +98,7 @@ catch (they read for behavior and quality, not structural validity).
      gracefully, same as the missing-binary case above.
 3. For every provided PRD file, against whichever schema source resolved:
    ```
-   cue vet <prd-file> <schema-file-or-registry-import> -d '#PRDDocument'
+   cue vet <schema-file-or-registry-import> -d '#PRDDocument' <prd-file>
    ```
 4. If every file passes (exit 0), proceed to Phase 1.
 5. If any file fails, stop — do not dispatch the 5 agents. Emit the same
