@@ -34,7 +34,12 @@ Example:
 ```
 /prd-review prds/my-feature.yaml prds/my-feature-phase1.yaml
 /prd-review --serial prds/my-feature.yaml prds/my-feature-phase1.yaml
-/prd-review --schema schema/prd.cue prds/my-feature.yaml prds/my-feature-phase1.yaml
+```
+
+`--schema <path>` is optional — only needed if the registry is
+unreachable and you want a local fallback:
+```
+/prd-review --schema prd.cue prds/my-feature.yaml prds/my-feature-phase1.yaml
 ```
 
 If no paths are given, ask for them before proceeding.
@@ -74,15 +79,17 @@ catch (they read for behavior and quality, not structural validity).
    `module/AGENTS.md`).
 2. Otherwise, resolve the schema, registry first:
    - **Registry** (primary): the schema is published to the CUE Central
-     Registry at the module path in this module's own
-     `cue.mod/module.cue` (`github.com/unbound-force/intake-kit@v0`,
-     definition `#PRDDocument` in the `prds` package under the `schema`
-     directory, imported as
-     `github.com/unbound-force/intake-kit/schema:prds`). Attempt to
-     resolve and vet against it. If the module isn't published yet, the
-     version doesn't exist, or the registry is unreachable (offline,
-     airgapped, no `cue login`), this attempt fails — that is expected
-     and not an error; fall through to the next option.
+     Registry from this module's `cue.mod/module.cue`
+     (`github.com/unbound-force/intake-kit@v0`, definition
+     `#PRDDocument` in the `prds` package at the module root). The
+     caller needs no local CUE module of their own — vet directly
+     against the registry import like the following command:
+     ```
+     cue vet github.com/unbound-force/intake-kit@<version>:prds -d '#PRDDocument' <prd-file>
+     ```
+     If the module isn't published yet, the registry is unreachable,
+     this attempt fails — that is expected and not an error; fall
+     through to the next option.
    - **`--schema <path>`** (fallback): if given, vet against that local
      file's `#PRDDocument` definition instead.
    - **Neither resolves**: skip this phase and note in the final report:
@@ -91,7 +98,7 @@ catch (they read for behavior and quality, not structural validity).
      gracefully, same as the missing-binary case above.
 3. For every provided PRD file, against whichever schema source resolved:
    ```
-   cue vet <prd-file> <schema-file-or-registry-import> -d '#PRDDocument'
+   cue vet <schema-file-or-registry-import> -d '#PRDDocument' <prd-file>
    ```
 4. If every file passes (exit 0), proceed to Phase 1.
 5. If any file fails, stop — do not dispatch the 5 agents. Emit the same

@@ -13,7 +13,7 @@ module/                            ← installable module (what users get)
     SKILL.md                       ← orchestration skill
     references/                    ← reviewer protocol and shared refs
   commands/prd-review.md           ← command entry point
-schema/                            ← CUE schema (published to CUE registry)
+prd.cue                            ← CUE schema (published to CUE registry)
 cue.mod/                           ← CUE module definition
 examples/                          ← example PRD YAML files
 .github/workflows/                 ← CI (CUE registry publish)
@@ -36,7 +36,7 @@ Follow the existing agent files as a template when adding new ones.
 
 ## Working on the schema
 
-The CUE schema at `schema/prd.cue` is published to the CUE Central
+The CUE schema at `prd.cue` is published to the CUE Central
 Registry via the `publish-cue.yml` workflow on tag push. The module
 definition at `cue.mod/module.cue` controls the module path and
 language version.

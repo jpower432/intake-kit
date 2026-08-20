@@ -8,7 +8,7 @@ OpenCode.
 
 ## What's in the box
 
-- **CUE schema** (`schema/prd.cue`) — validates PRD YAML documents. Enforces structure for stakeholders, functional
+- **CUE schema** (`prd.cue`) — validates PRD YAML documents. Enforces structure for stakeholders, functional
   requirements, acceptance criteria, workflows, and lifecycle state.
 - **prd-review skill** (`module/skills/prd-review/`) — a Lola skill that checks CUE schema conformance, then dispatches
   5 specialist review agents (`module/agents/prd-*.md`) against a PRD family and emits a BLOCKED / NEEDS REVISION /
@@ -39,7 +39,7 @@ See `examples/` for the full field set.
 Requires [CUE](https://cuelang.org/docs/introduction/installation/).
 
 ```bash
-cue vet schema/prd.cue your-prd.yaml
+cue vet prd.cue -d '#PRDDocument' your-prd.yaml
 ```
 
 ## Running the Review Council
@@ -81,7 +81,7 @@ module/                  ← installable Lola module
   agents/                ← standalone review agent definitions (prd-guard, prd-adversary, ...)
   skills/prd-review/     ← orchestration skill (schema check + agent dispatch + verdict)
   commands/              ← command entry points
-schema/                  ← CUE schema (published to registry)
+prd.cue                  ← CUE schema (published to registry)
 cue.mod/                 ← CUE module definition
 examples/                ← example PRD YAML files
 ```
