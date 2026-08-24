@@ -3,7 +3,7 @@ package prds
 #SchemaVersion: =~"^[0-9]+\\.[0-9]+\\.[0-9]+$"
 #Date:          =~"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
 
-#StakeholderRole: "Product Owner" | "Requestor" | "Stakeholder Representative" | "Technical Owner" | "Technical Owner Understudy"
+#StakeholderRole: "Product Owner" | "Requestor" | "Stakeholder Representative" | "Technical Owner" | "Alternate Technical Owner"
 
 #Stakeholder: {
 	role:     #StakeholderRole
