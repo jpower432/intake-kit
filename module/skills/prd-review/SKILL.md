@@ -1,6 +1,6 @@
 ---
 name: prd-review
-description: Multi-lens AI review council for PRDs. Run before advancing a PRD from Draft to Review state.
+description: Multi-lens AI review council for PRDs. On a Draft PRD, runs a cue vet + Guard review by default; with --full, runs the full five-agent council that gates Draft → Ready.
 ---
 
 # Helper paths
@@ -11,13 +11,15 @@ description: Multi-lens AI review council for PRDs. Run before advancing a PRD f
 # PRD Review Council
 
 Multi-lens AI review council for structured PRDs. Checks CUE schema
-conformance, then dispatches 5 specialist review agents against a PRD
-family (parent + phase files). Produces a consolidated finding report and
-a verdict that gates state advancement.
+conformance and FR/journey coverage in one `cue vet` pass, then
+dispatches review agents against a PRD family (parent + phase files) —
+Guard only by default, all 5 specialists with `--full`. Produces a
+consolidated finding report and, on `--full`, a verdict that gates
+`Draft → Ready`.
 
 ## When to Use
 
-- PRD is transitioning from `Draft` → `Review` state
+- PRD is at `Draft`: a fresh PRD, or a matured PRD ready for the full `--full` council that gates `Draft → Ready`
 - User invokes `/prd-review` with PRD file paths
 - User asks for "PRD review" or "run the review council on this PRD"
 
@@ -44,19 +46,25 @@ unreachable and you want a local fallback:
 
 If no paths are given, ask for them before proceeding.
 
-**Review mode is a cost/speed tradeoff, not a capability fallback:**
+**Review mode is a cost/speed tradeoff, not a capability fallback.** It
+applies to whichever agents Phase 2 selects — Guard alone by default, all
+5 with `--full`:
 
-- **`parallel`** (default) — all 5 agents dispatch as independent
+- **`parallel`** (default) — the dispatched agents run as independent
   subagents, each ingesting its own copy of the full PRD family plus
   `reviewer-protocol.md`. For a PRD family of N tokens this costs roughly
-  5N tokens of ingestion (plus five ~1K-token persona files), against
-  ~1N for a single-context read. Faster wall-clock, higher token cost —
-  the cost grows with PRD family size, not just with a fixed checklist.
-- **`serial`** — the orchestrator adopts each of the 5 personas in this
+  kN tokens of ingestion for k dispatched agents (plus one ~1K-token
+  persona file per agent — one at Guard-only default, five with `--full`),
+  against ~1N for a single-context read. Faster wall-clock, higher token
+  cost — the cost grows with PRD family size and agent count, not just
+  with a fixed checklist.
+- **`serial`** — the orchestrator adopts each dispatched persona in this
   same context, one at a time, reusing the PRD text already read in
   Phase 1 (see below) instead of re-ingesting it per agent. Cost stays
-  near ~1N regardless of how many agents run. Slower wall-clock (5
-  sequential passes instead of 5 concurrent ones), lower token cost.
+  near ~1N regardless of how many agents run. Slower wall-clock at
+  `--full` (5 sequential passes instead of 5 concurrent ones; a no-op
+  distinction at Guard-only default, where there's only one agent either
+  way), lower token cost.
 - If the user does not specify a mode and the host cannot do named-agent
   dispatch at all, `serial` is the only option regardless of request —
   this is a hard capability fallback, separate from the cost/speed choice
@@ -101,36 +109,64 @@ catch (they read for behavior and quality, not structural validity).
    cue vet <schema-file-or-registry-import> -d '#PRDDocument' <prd-file>
    ```
 4. If every file passes (exit 0), proceed to Phase 1.
-5. If any file fails, stop — do not dispatch the 5 agents. Emit the same
-   report format as Phase 4 below, with `Verdict: BLOCKED`,
+5. If any file fails, stop — do not dispatch any review agents. Emit the
+   same report format as Phase 5 below, with `Verdict: BLOCKED`,
    `Schema conformance: BLOCKED`, a single BLOCKERs entry containing the
    raw `cue vet` error output verbatim (it already names the exact field,
-   constraint, and file/line), and empty WARNINGs/INFO sections — the 5
-   agents never ran. A structurally invalid PRD isn't reviewable for
-   behavioral quality until the schema violation itself is fixed.
+   constraint, and file/line), and empty WARNINGs/INFO sections — no
+   agents ran. A structurally invalid PRD isn't reviewable for behavioral
+   quality until the schema violation itself is fixed.
 
 ### Phase 1: Preparation
 
 Read all provided PRD files and hold the raw file text verbatim in
-context for each one — not just extracted fields. Phase 3 needs to
+context for each one — not just extracted fields. Phase 4 needs to
 byte-match `evidence` quotes against this raw text later; extracting only
-a field summary here would force a second full read in Phase 3.
+a field summary here would force a second full read in Phase 4.
 
 Also extract, for convenience during Dispatch and Synthesis:
 
-- **Parent**: `title`, `slug`, `description`, `personas`, `nonfunctional_requirements`, `kpis`, `features`, `stakeholders`, `open_questions` (each with its own `context`, if present)
-- **Each phase**: `phase`, `state`, `workflow`, `functional_requirements` (with ACs), `dependencies`, and `features` if this phase file declares its own (see the Feature Traceability note in Phase 2's Guard row — `features` isn't parent-exclusive)
+- **Parent**: `title`, `slug`, `description`, `job-executors`, `nonfunctional-requirements`, `desired-outcomes`, `features`, `stakeholders`, `open-questions` (each with its own `context`, if present)
+- **Each phase**: `phase`, `state`, `journeys`, `functional-requirements` (with ACs), `dependencies`, and `features` if this phase file declares its own (see the Feature Traceability note in Phase 3's Guard row — `features` isn't parent-exclusive)
 
-Note the PRD `state.status`. If already `Approved` or `Superseded`, warn the user and ask whether to continue.
+Note the PRD `state.status` for use in Phase 2's stage selection.
 
-### Phase 2: Dispatch
+### Phase 2: Stage selection
+
+Read `state.status` on each phase file (from the text held in Phase 1)
+and select review depth by the LEAST-mature phase in the family and
+whether `--full` was passed:
+
+| Least-mature `state.status` | Invocation | Agents dispatched | Gate |
+|---|---|---|---|
+| `Draft` | default | **Guard only** + the Phase 0 `cue vet` floor | none — sanity pass, stays `Draft` |
+| `Draft` | `--full` | **All 5** (Guard, Adversary, Tester, Operator, Curator) + floor | **`Draft → Ready`** |
+| `Ready` / `Approved` / `Superseded` | any | none by default | none — warn the author; `--full` may re-run all 5 for feedback but gates nothing |
+
+Why Guard-only at a fresh Draft: acceptance criteria are untrusted and
+optional at Draft, so the Tester (AC quality), Adversary (security
+detail), Operator (deployment), and Curator (evidence/retention) lenses
+have nothing stable to review yet — running them produces noise and burns
+~4x the tokens for findings the author will invalidate at the next edit.
+Guard's coherence/value/traceability/executor lens is the one that IS
+meaningful on a PRD, and `cue vet` already caught every structural
+defect. The full council earns its cost only once the PO has matured the
+PRD and runs `--full` to gate `Draft → Ready`.
+
+Both PRD tiers are `state.status: Draft`; the tier is chosen by the
+`--full` flag, not the status value. There is no `Ready → Approved` gate in this skill — that transition is a manual human sign-off outside it.
+This skill never dispatches for that transition, never gates it, and NEVER writes `state.status: Approved`.
+
+### Phase 3: Dispatch
+
+Dispatch only the agents selected in Phase 2 — Guard alone by default, all five with `--full`.
 
 Hand each agent the PRD context, file paths, and
 `$SKILL_DIR/references/reviewer-protocol.md`:
 
 | Agent | File | Reviews |
 |---|---|---|
-| Guard | `module/agents/prd-guard.md` | Intent fidelity, scope discipline, persona/ID/workflow integrity, FR-to-value traceability |
+| Guard | `module/agents/prd-guard.md` | Intent fidelity, scope discipline, executor/ID/journey integrity, FR-to-value traceability |
 | Adversary | `module/agents/prd-adversary.md` | Security gaps + ambiguity/completeness |
 | Tester | `module/agents/prd-tester.md` | Behavioral language, testability, AC quality |
 | Operator | `module/agents/prd-operator.md` | Deployment/environment/connectivity assumptions |
@@ -141,24 +177,26 @@ Hand each agent the PRD context, file paths, and
 every `features` entry across the whole PRD family, not just the
 parent's.
 
-**`parallel` mode** (default, host-capable): dispatch all 5 as independent
-subagents concurrently. Each receives the PRD file paths and
+**`parallel` mode** (default, host-capable): dispatch the agents selected
+in Phase 2 — Guard alone by default, all five with `--full` — as
+independent subagents concurrently. Each receives the PRD file paths and
 `reviewer-protocol.md` and reads the PRD family itself — it does not
 inherit the orchestrator's Phase 1 context.
 
 **`serial` mode** (requested, or forced by host capability): stay in this
-context. For each of the 5 agents in turn, adopt its persona from its
+context. For each dispatched agent in turn, adopt its persona from its
 full file, apply its Phased Process against the PRD text already held
 from Phase 1 — do not re-read the PRD files — collect its JSON output,
-then move to the next persona. This is what makes `serial` cheaper: the
-PRD ingestion cost is paid once in Phase 1, not once per persona.
+then move to the next persona (a single pass at Guard-only default; five
+passes with `--full`). This is what makes `serial` cheaper: the PRD
+ingestion cost is paid once in Phase 1, not once per persona.
 
 Each agent returns its own fenced JSON block per
 `reviewer-protocol.md` — no prose, no summaries, no praise.
 
-### Phase 3: Verify
+### Phase 4: Verify
 
-For every finding across all 5 agents' JSON output, confirm `evidence` is
+For every finding across the dispatched agents' JSON output, confirm `evidence` is
 a literal substring of the PRD file `location` is scoped to (the parent
 or phase file containing the cited ID or section), checked against the
 raw text held from Phase 1. Drop any finding whose `evidence` cannot be
@@ -169,11 +207,11 @@ This is an LLM re-check pass over the raw PRD text already held from
 Phase 1 — no re-reading files, no scripts, no schema-as-code, keeping the
 module script-free per `AGENTS.md`.
 
-### Phase 4: Synthesis & Verdict
+### Phase 5: Synthesis & Verdict
 
 Collect the findings that survived Verify. Group by severity:
 
-- **BLOCKER** — must be resolved before PRD advances to Review
+- **BLOCKER** — must be resolved before PRD advances to Ready
 - **WARNING** — author must respond with rationale to skip, or resolve
 - **INFO** — advisory, no response required
 
@@ -208,16 +246,35 @@ Schema conformance: PASSED | SKIPPED (<reason>) | BLOCKED
 <one sentence per verdict type — what the author must do>
 ```
 
-If `APPROVED`: state the PRD may advance to `Review` state.
-If `NEEDS REVISION`: list each WARNING and state the author must resolve or respond before merge.
-If `BLOCKED`: list each BLOCKER and state nothing advances until they are resolved.
+The verdict's meaning depends on the tier selected in Phase 2:
+- **Default Draft (cue vet + Guard) review** — never gates a state
+  transition. `APPROVED` means the PRD is coherent enough to mature;
+  keep sharpening it, then run `/prd-review --full` for the gating
+  council. `NEEDS REVISION`/`BLOCKED` keep it at `Draft`.
+- **`--full` Draft council** — the only gating pass.
+  - `APPROVED`: the matured PRD is eligible to advance `Draft → Ready`.
+    ASK the PO to confirm ("Advance <slug> from Draft to Ready? [y/N]").
+    ONLY after an explicit in-session `yes`, edit the PRD file's
+    `state.status: Draft` to `Ready`, show the diff, and report it. If
+    the PO declines or does not answer, leave it at `Draft`. Never
+    advance without that confirmation.
+  - `NEEDS REVISION`/`BLOCKED`: keep it at `Draft`; do not mutate.
+
+`Ready → Approved` is a manual human sign-off OUTSIDE this toolkit. This
+skill NEVER writes `state.status: Approved` and never gates that
+transition — not even on explicit request. If asked, tell the author
+they set `Approved` by hand.
 
 ## Rules
 
-- Never edit PRD files.
+- Never edit PRD files, with one exception: mutating `state.status: Draft`
+  to `Ready` in Phase 5, and only after explicit in-session PO
+  confirmation on an `APPROVED` `--full` verdict. Never write
+  `state.status: Approved` — that transition is a manual human sign-off
+  outside this skill.
 - Report findings only — do not propose rewrites unless the user explicitly asks after the report.
 - If a PRD file cannot be read, report `BLOCKED` with reason.
-- If Phase 0 finds a schema violation, report `BLOCKED` with the raw `cue vet` output and stop — do not dispatch the 5 agents against a structurally invalid file.
+- If Phase 0 finds a schema violation, report `BLOCKED` with the raw `cue vet` output and stop — do not dispatch any review agents against a structurally invalid file.
 - If Phase 0 is skipped (no schema found, or `cue` unavailable), say so plainly in the report — never imply schema conformance was checked when it wasn't.
 - Walk one finding at a time if user asks for interactive mode — otherwise emit the full report.
 - Findings from different agents may overlap in location. Do not deduplicate across agents — each agent owns its own scope.

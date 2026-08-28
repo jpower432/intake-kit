@@ -18,7 +18,7 @@ row, don't flag it — the owning agent will.
 
 | Domain | Owner |
 |---|---|
-| Persona/ID/workflow consistency, feature traceability, scope/value coherence | Guard |
+| Executor/outcome/ID/journey consistency, feature traceability, scope/value coherence | Guard |
 | Auth boundaries, credential scope, trust model, ambiguity hiding a security decision | Adversary |
 | Behavioral language, testability, AC quality, technology-naming-as-implementation-choice | Tester |
 | Deployment, environment, and connectivity assumptions | Operator |
@@ -42,8 +42,9 @@ same for all 5 agents and aren't restated per agent:
 ## Evidence Discipline
 
 - Read every provided PRD file in full before drafting any finding.
-- Ground every cited identifier — FR ID, NFR ID, AC ID, persona string,
-  workflow step — in text you have actually read in the cited file.
+- Ground every cited identifier — FR ID, NFR ID, AC ID, executor id,
+  desired-outcome id, journey step — in text you have actually read in
+  the cited file.
 - Never assert a field is absent without having read the whole section of
   the file where it would appear.
 - Never fabricate a quote. `evidence` is a byte-for-byte substring of the
@@ -82,12 +83,12 @@ no prose before or after it.
 ```json
 {
   "agent": "prd-guard",
-  "sections_read": ["parent.personas", "phase1.functional_requirements"],
+  "sections_read": ["parent.job-executors", "phase1.functional-requirements"],
   "verdict": "APPROVE | REQUEST_CHANGES",
   "findings": [
     {
       "severity": "BLOCKER|WARNING|INFO",
-      "location": "FR-003-02",
+      "location": "FR-MFP-002",
       "title": "Short headline naming the defect",
       "evidence": "<verbatim quote from the cited PRD file>",
       "issue": "What is wrong, one sentence",
