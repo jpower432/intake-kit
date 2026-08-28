@@ -3,5 +3,9 @@
   "claude-code/claude-sonnet-4-6/case-001-unknown-executor/project/none": {
     "composite": 0.925,
     "rubric_pass_threshold": 0.6
+  },
+  "claude-code/claude-sonnet-4-6/case-002-discovery-seeds-prd/project/none": {
+    "composite": 0.99,
+    "rubric_pass_threshold": 0.6
   }
 }

@@ -1,0 +1,18 @@
+# Issue-tracker scope for discovery-gatherer.
+#
+# Copy this file to `discovery-tracker.yaml` (gitignored) and fill it in.
+# This file declares WHAT to search — project keys, boards, repos — and
+# never HOW to connect. The gatherer reaches your tracker through whatever
+# issue-tracker MCP your host has mounted (Atlassian Rovo, GitLab, GitHub,
+# Linear, ...). If this file is absent, the gatherer falls back to listing
+# the tracker's projects and inferring scope from the problem framing.
+tracker:
+  # Human-readable label only; informational, not used to connect.
+  name: "My org tracker"
+  scope:
+    # Jira project keys / GitLab groups / GitHub repos to search.
+    project_keys: []
+    # Optional board / sprint filters.
+    boards: []
+    # Keys, labels, or components to exclude from search.
+    exclude: []

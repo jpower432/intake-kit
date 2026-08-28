@@ -24,3 +24,5 @@ node_modules/
 
 # Working artifacts (never committed)
 docs/superpowers/
+# Org-specific tracker scope for discovery (never committed; example is tracked)
+/discovery-tracker.yaml

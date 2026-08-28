@@ -12,7 +12,11 @@ module/                            ← installable module (what users get)
   skills/prd-review/
     SKILL.md                       ← orchestration skill
     references/                    ← reviewer protocol and shared refs
+  skills/discovery/
+    SKILL.md                       ← orchestration skill
+    references/discovery-protocol.md  ← shared researcher/gatherer contract
   commands/prd-review.md           ← command entry point
+  commands/discovery.md            ← command entry point
 prd.cue                            ← CUE schema (published to CUE registry)
 cue.mod/                           ← CUE module definition
 examples/                          ← example PRD YAML files
@@ -33,6 +37,13 @@ copy that will be overwritten on next install.
 Agent definitions live at `module/agents/prd-*.md`. Each is a standalone
 reviewer that runs in parallel during Phase 2 of the review council.
 Follow the existing agent files as a template when adding new ones.
+
+## Working on discovery agents
+
+Agent definitions live at `module/agents/discovery-*.md`. The researcher
+and gatherer run in parallel during Phase 1 of the discovery skill; the
+distiller runs in Phase 2. Follow the existing agent files as a template
+when adding new ones.
 
 ## Working on the schema
 

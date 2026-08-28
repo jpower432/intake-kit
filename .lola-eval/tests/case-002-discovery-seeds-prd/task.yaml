@@ -1,0 +1,25 @@
+task_version: "1"
+description: |
+  A bare problem brief (`problem.md`) with no PRD. The agent is asked to
+  use the discovery skill to seed a complete PARENT PRD from nothing:
+  header, slug, title, description, job-executors, desired-outcomes,
+  scope, stakeholders, and distilled open-questions — no phases,
+  functional-requirements, or journeys.
+
+  This case measures the discovery skill's ability to produce a
+  schema-valid parent PRD ("full parent PRD, no FRs") from a plain-language
+  brief. The researcher/gatherer are constrained to work offline (no web,
+  no tracker MCP) so the run is reproducible.
+timeout_seconds: 1800
+followup_messages:
+  - |
+    Emit the final parent PRD as a single fenced YAML block, exactly as it
+    would be saved to a `.yaml` file for validation against `prd.cue`. Then,
+    below it, a short summary using this exact format:
+
+    PRODUCED_PARENT_PRD: <yes or no>
+    TOP_LEVEL_KEYS: <comma-separated top-level YAML keys present>
+    JOB_EXECUTORS_COUNT: <number>
+    DESIRED_OUTCOMES_COUNT: <number>
+    OPEN_QUESTIONS_COUNT: <number>
+    CONTAINS_PHASES_OR_FRS: <yes or no>

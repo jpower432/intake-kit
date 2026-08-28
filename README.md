@@ -13,6 +13,9 @@ OpenCode.
 - **prd-review skill** (`module/skills/prd-review/`) — checks schema conformance, then dispatches review agents against
   a PRD family and emits a BLOCKED / NEEDS REVISION / APPROVED verdict. A default Guard-only pass gates nothing;
   `--full` runs the 5-agent council and is the only pass that gates `Draft → Ready`.
+- **discovery skill** (`module/skills/discovery/`) — Stage-0 problem exploration before FRs exist: a researcher and a
+  tracker gatherer surface findings, then a distiller either produces `open-questions` for an existing PRD or seeds a
+  parent PRD (framing, desired-outcomes, open-questions; no FRs) from a bare brief.
 - **Example PRDs** (`examples/`) — parent and phase templates to copy and fill in.
 
 ## Install
@@ -34,6 +37,13 @@ Run the review council (in any AI assistant that supports Lola skills):
 ```
 /prd-review prds/my-feature.yaml prds/my-feature-phase1.yaml          # Guard-only, gates nothing
 /prd-review --full prds/my-feature.yaml prds/my-feature-phase1.yaml   # full council, gates Draft → Ready
+```
+
+Run discovery:
+
+```
+/discovery prds/my-feature.yaml                                              # distill open-questions into a PRD
+/discovery "People save links to read later but lose track of what they've read."   # seed a parent PRD from a brief
 ```
 
 ## PRD document model
@@ -59,16 +69,17 @@ See `examples/` for the full field set.
 
 ```
 module/                  ← installable Lola module
-  agents/                ← review agent definitions
+  agents/                ← review + discovery agent definitions
   skills/prd-review/     ← schema check + agent dispatch + verdict
+  skills/discovery/      ← Stage-0 research + distillation
   commands/              ← command entry points
 prd.cue                  ← CUE schema (published to registry)
 cue.mod/                 ← CUE module definition
 examples/                ← example PRD YAML files
 ```
 
-The review council roster, dispatch modes, and verdict phases live in
-`module/skills/prd-review/SKILL.md`. See [AGENTS.md](AGENTS.md) for the
+The review council roster, dispatch modes, verdict phases, and cross-document check taxonomy live in
+`module/skills/prd-review/SKILL.md` and `module/skills/discovery/SKILL.md`. See [AGENTS.md](AGENTS.md) for the
 developer guide.
 
 ## License
