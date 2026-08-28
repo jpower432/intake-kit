@@ -1,0 +1,23 @@
+header:
+  schema-version: "0.1.0"
+  version: "0.1.0"
+  last-updated: "2026-01-01"
+  parent: my-feature
+slug: my-feature-phase1
+phase: "Phase 1"
+state:
+  status: Ready
+journeys:
+  - label: "Detect journey"
+    executor: auditor
+    steps:
+      - label: "Scan"
+        description: "Scan controls."
+        implements: [FR-MFP-001]
+functional-requirements:
+  - id: FR-MFP-001
+    title: "Control scan"
+    satisfies: [DO-MF-001]
+    acceptance-criteria:
+      - id: AC-MFP-001-01
+        description: "Scan completes and reports drift."

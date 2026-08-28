@@ -18,15 +18,28 @@ package prds
 	parent?:          string & =~"^[a-z][a-z0-9-]*$"
 }
 
-#WorkflowStep: {
+#JourneyStep: {
 	label:       string & !=""
 	description: string & !=""
 	implements: [...string] & [_, ...]
 }
 
-#Workflow: {
-	label: string & !=""
-	steps: [...#WorkflowStep] & [_, ...]
+#Journey: {
+	label:    string & !=""
+	executor: string & !=""
+	steps: [...#JourneyStep] & [_, ...]
+}
+
+#JobExecutor: {
+	id:       string & =~"^[a-z][a-z0-9-]*$"
+	label:    string & !=""
+	"core-job": string & !=""
+}
+
+#DesiredOutcome: {
+	id:           string & =~"^DO-[A-Z]+-\\d{3}$"
+	statement:    string & !=""
+	"executor-id": string & =~"^[a-z][a-z0-9-]*$"
 }
 
 #AcceptanceCriteria: {
@@ -35,27 +48,22 @@ package prds
 }
 
 #FunctionalRequirement: {
-	id:      string & =~"^FR-[A-Z]+-\\d{3}$"
-	title:   string & !=""
-	persona: string & !=""
-	acceptance_criteria: [...#AcceptanceCriteria] & [_, ...]
+	id:    string & =~"^FR-[A-Z]+-\\d{3}$"
+	title: string & !=""
+	satisfies: [...string]
+	"acceptance-criteria": [...#AcceptanceCriteria]
 }
 
 #NonFunctionalRequirement: {
 	id:          string & =~"^NFR-[A-Z]+-\\d{3}$"
 	title:       string & !=""
 	description: string & !=""
+	satisfies?: [...string]
 }
 
 #OpenQuestion: {
 	question: string & !=""
 	context?: string
-}
-
-#KPI: {
-	metric: string & !=""
-	target: string & !="" // qualitative acceptable in Draft
-	baseline?: string
 }
 
 #Dependency: {
@@ -65,7 +73,7 @@ package prds
 }
 
 #State: {
-	status:   "Draft" | "Review" | "Approved" | "Superseded"
+	status:   "Draft" | "Ready" | "Approved" | "Superseded"
 	remarks?: string
 }
 
@@ -73,39 +81,49 @@ package prds
 	header: #PRDHeader
 	slug?:  string & =~"^[a-z][a-z0-9-]*$"
 
-	// Root-level fields
 	stakeholders?: [...#Stakeholder] & [_, ...]
-	title?:        string & !=""
+	title?:       string & !=""
 	description?: string & !=""
 	features?: [...string] & [_, ...]
-	personas?: [...string] & [_, ...]
 	scope?: {
-		in_scope: [...string]
-		out_of_scope: [...string]
+		"in-scope": [...string]
+		"out-of-scope": [...string]
 	}
-	nonfunctional_requirements?: [...#NonFunctionalRequirement] & [_, ...]
-	kpis?: [...#KPI] & [_, ...]
+	"nonfunctional-requirements"?: [...#NonFunctionalRequirement] & [_, ...]
 
-	// Phase-level fields
-	phase?:    string & !=""
-	state?:    #State
-	workflow?: #Workflow
-	functional_requirements?: [...#FunctionalRequirement] & [_, ...]
+	phase?: string & !=""
+	state?: #State
+	journeys?: [...#Journey] & [_, ...]
+	"functional-requirements"?: [...#FunctionalRequirement] & [_, ...]
 	dependencies?: [...#Dependency] & [_, ...]
 
-	open_questions?: [...#OpenQuestion]
+	"open-questions"?: [...#OpenQuestion]
 
-	// A document is either a phase (has `phase`) or a parent (does not).
-	// Each shape has its own required fields — `header` alone is not a
-	// valid document either way.
-	// Discriminate parent vs phase document shape: `!= _|_` means the
-	// field is set (not bottom/undefined).
 	if phase != _|_ {
-		workflow:                 #Workflow
-		functional_requirements: [...#FunctionalRequirement] & [_, ...]
+		journeys: [...#Journey] & [_, ...]
+		_fr="functional-requirements": [...#FunctionalRequirement] & [_, ...]
+
+		// CUE-native FR/journey coverage floor: ORPHAN_FR (every FR is
+		// implemented by at least one journey step) and UNKNOWN_FR (every
+		// `implements` id names a real FR in this phase). A failure names
+		// the offending id, e.g. `_ck_orphan_fr.1: undefined field: "FR-MFP-002"`.
+		_frSet: {for f in _fr {(f.id): true}}
+		_implementedFR: {for j in journeys for s in j.steps for id in s.implements {(id): true}}
+		_ck_orphan_fr: [for f in _fr {_implementedFR[f.id] & true}]
+		_ck_unknown_fr: [for j in journeys for s in j.steps for id in s.implements {_frSet[id] & true}]
+
+		// Maturity gate: acceptance criteria are optional at early stage (Draft)
+		// and required once a phase reaches Ready or Approved.
+		if state != _|_ {
+			if state.status == "Ready" || state.status == "Approved" {
+				"functional-requirements": [...{"acceptance-criteria": [_, ...]}]
+				"functional-requirements": [...{satisfies: [_, ...]}]
+			}
+		}
 	}
 	if phase == _|_ {
-		title:    string & !=""
-		personas: [...string] & [_, ...]
+		title: string & !=""
+		"job-executors": [...#JobExecutor] & [_, ...]
+		"desired-outcomes"?: [...#DesiredOutcome]
 	}
 }

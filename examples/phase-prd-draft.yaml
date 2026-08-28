@@ -1,0 +1,22 @@
+header:
+  schema-version: "0.1.0"
+  version: "0.1.0"
+  last-updated: "2026-01-01"
+  parent: my-feature
+slug: my-feature-phase1-draft
+phase: "Phase 1 — Early"
+state:
+  status: Draft
+open-questions:
+  - question: "Does the downstream consumer require a specific wire format?"
+journeys:
+  - label: "Example Journey"
+    executor: example-executor
+    steps:
+      - label: "Step One"
+        description: "What happens in this step."
+        implements: [FR-MFP-001]
+functional-requirements:
+  - id: FR-MFP-001
+    title: "Example Functional Requirement"
+    satisfies: []

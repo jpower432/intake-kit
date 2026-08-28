@@ -19,26 +19,28 @@ stakeholders:
   - role: "Stakeholder Representative"
     handle: "@handle"
 
-personas:
-  - "Example Persona"
+job-executors:
+  - id: example-executor
+    label: "Example Executor"
+    core-job: "accomplish the core job this initiative serves, in its context"
+
+desired-outcomes:
+  - id: DO-MF-001
+    statement: "minimize the time it takes to <accomplish a step of the job> so <context>"
+    executor-id: example-executor
 
 scope:
-  in_scope:
+  in-scope:
     - "Thing we are building"
-  out_of_scope:
+  out-of-scope:
     - "Thing we are not building"
 
-nonfunctional_requirements:
+nonfunctional-requirements:
   - id: NFR-MF-001
     title: "Example NFR"
     description: >-
       Describe the non-functional requirement here.
 
-kpis:
-  - metric: "Example metric this initiative moves"
-    target: "Qualitative direction is acceptable in Draft; add a number once validated with stakeholders."
-    baseline: "Current value or state, if known"
-
-open_questions:
+open-questions:
   - question: >-
       An open question that needs resolution before or during delivery.
