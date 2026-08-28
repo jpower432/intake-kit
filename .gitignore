@@ -11,5 +11,16 @@ node_modules/
 .claude/
 .superpowers/
 
+# lola-eval harness: project-local venv + generated run artifacts
+.venv/
+.lola-eval/out/
+.lola-eval/runs.db
+.lola-eval/results/
+.lola-eval/*.xml
+# Provisioned into starters by provision.sh; regenerated, never committed
+.lola-eval/tests/*/starter-clean/
+.lola-eval/tests/*/starter/.gitconfig
+.lola-eval/tests/*/starter/.opencode/
+
 # Working artifacts (never committed)
 docs/superpowers/

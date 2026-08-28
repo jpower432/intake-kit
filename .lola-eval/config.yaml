@@ -1,0 +1,39 @@
+# .lola-eval/config.yaml — Mode 1 (in-repo) spike scaffold.
+#
+# The project provisions its own pack (see provision.sh) and the harness
+# measures the agent's behaviour against that environment. Trimmed to a
+# single test cell for the initial spike; widen the matrix once the
+# harness has proven itself here.
+
+# Cases live in `.lola-eval/tests/`, not the harness default `test_sets/`.
+tests_dir: tests
+
+# Pinned to a concrete model id so composite scores stay reproducible.
+targets:
+  - cli: claude-code
+    models:
+      - claude-sonnet-4-6
+
+# Bare-model "none" pass doubles run cost; off until we want a lift study.
+calculate_baseline: false
+
+threshold:
+  mode: absolute
+  tolerance: 0.15
+  timeout_is_failure: true
+
+concurrency: 4
+
+timeouts:
+  runner_seconds: 14400   # 4h; don't let the harness kill slow cells
+  agent_seconds: 1800     # 30m per agent (matches task.yaml timeout_seconds)
+
+judges:
+  - {cli: claude-code, model: claude-sonnet-4-6}  # single judge keeps drift comparable
+
+aggregation: mean
+
+ci:
+  junit_xml: true
+  github_summary: true
+  html_report: true

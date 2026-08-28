@@ -1,0 +1,21 @@
+task_version: "2"
+description: |
+  A two-file PRD family (parent + one Draft phase) with a single seeded
+  cross-file defect: the phase's journey names executor `ghost-admin`,
+  which is not in the parent's job-executors list (only `end-user` is).
+  The family is schema-valid and passes `cue vet`, so the defect is
+  invisible to the structural floor — only the Guard agent's cross-file
+  referential check should catch it (UNKNOWN_EXECUTOR, BLOCKER).
+timeout_seconds: 1800
+followup_messages:
+  - |
+    Emit a structured summary of the review you just performed.
+    Use this exact format:
+
+    VERDICT: <APPROVE or REQUEST CHANGES>
+    FINDINGS_COUNT: <number>
+    FINDINGS:
+    - <severity>: <one-line description, naming the file and id involved>
+    - <severity>: <one-line description, naming the file and id involved>
+    FALSE_POSITIVES: <number you believe are false positives, if any>
+    SCOPE_USED: <which PRD files were in scope>

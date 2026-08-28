@@ -1,0 +1,28 @@
+header:
+  schema-version: "0.1.0"
+  version: "0.1.0"
+  last-updated: "2026-01-01"
+  parent: link-shortener
+
+slug: link-shortener-phase1
+phase: "Phase 1 — Create Links"
+
+state:
+  status: Draft
+
+journeys:
+  - label: "Create a short link"
+    # Seeded defect: `ghost-admin` is not declared in the parent's
+    # job-executors list (only `end-user` is). This is well-formed per the
+    # CUE schema (matches the executor id regex) and passes `cue vet`, so
+    # only the Guard agent's cross-file check catches it: UNKNOWN_EXECUTOR.
+    executor: ghost-admin
+    steps:
+      - label: "Shorten a URL"
+        description: "The user pastes a long URL and receives a short link."
+        implements: [FR-LS-001]
+
+functional-requirements:
+  - id: FR-LS-001
+    title: "Shorten a URL"
+    satisfies: [DO-LS-001]

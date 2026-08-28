@@ -1,0 +1,28 @@
+Intake Kit
+Copyright 2026 Unbound Force Contributors
+
+https://github.com/unbound-force/intake-kit
+
+This product includes software developed as part of the Review Council
+project (https://github.com/lolables/lola-mod-review-council), specifically
+the lola-eval harness scaffolding:
+
+  .taskfiles/scripts/ensure-lola-eval.sh   (used verbatim)
+  .taskfiles/lola-eval.yml                 (adapted for this module)
+
+Those files are used under the Apache License, Version 2.0. Their upstream
+attribution is retained per Apache License 2.0, Sections 4(c) and 4(d):
+
+  Review Council
+  Copyright 2026 Unbound Force Contributors
+  Copyright 2026 Lolables Contributors
+
+  The Review Council in turn derives from the Unbound Force project
+  (https://github.com/unbound-force/unbound-force).
+
+Changes from the Review Council harness:
+
+  - Reused .taskfiles/scripts/ensure-lola-eval.sh verbatim.
+  - Adapted .taskfiles/lola-eval.yml to the intake-kit module layout:
+    provisions module/ into per-case starters, defines the discovery and
+    prd-review eval cases, and pins a single Claude Code target cell.
