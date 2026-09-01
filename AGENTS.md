@@ -16,8 +16,32 @@ module/                            ← installable module (what users get)
 prd.cue                            ← CUE schema (published to CUE registry)
 cue.mod/                           ← CUE module definition
 examples/                          ← example PRD YAML files
+testdata/                          ← CUE schema test fixtures (valid + invalid)
+Taskfile.yml                       ← task runner (test, vet-examples)
 .github/workflows/                 ← CI (CUE registry publish)
+.opencode/                         ← Unbound Force dev tooling overlay
+  agents/                          ← agent definitions (Divisor council, etc.)
+  commands/                        ← slash command definitions
+  skills/                          ← orchestration skills (OpenSpec workflow)
+  uf/packs/                        ← convention packs (coding + content standards)
+  references/                      ← shared reference documents for agents
+openspec/                          ← OpenSpec change management schemas + templates
+opencode.json                      ← MCP server configuration (Dewey)
 ```
+
+## Development tooling vs. module content
+
+The `.opencode/` directory contains Unbound Force development tooling --
+agent definitions, convention packs, and workflow commands used by
+contributors to this repo. These are NOT part of the installable module.
+The `module/` directory contains the PRD review agents and skills that
+ship to users via Lola. Do not confuse the two.
+
+The `.opencode/` overlay is scaffolded by `uf init` and may include
+agents and commands that reference infrastructure not yet present in
+this project (e.g., `.specify/memory/constitution.md`, `specs/`). Agents
+are designed to degrade gracefully when referenced infrastructure is
+absent.
 
 ## Golden rule
 
@@ -60,3 +84,15 @@ Rules:
 4. **Graceful degradation over hard requirements.** Features that
    depend on host capabilities must degrade gracefully when the host
    lacks them, not fail.
+
+## Convention Packs
+
+This repository uses convention packs scaffolded by
+unbound-force. Agents MUST read the applicable pack(s)
+before writing or reviewing code.
+
+- `.opencode/uf/packs/default.md`
+- `.opencode/uf/packs/default-custom.md`
+- `.opencode/uf/packs/severity.md`
+- `.opencode/uf/packs/content.md`
+- `.opencode/uf/packs/content-custom.md`
