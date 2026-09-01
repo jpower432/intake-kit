@@ -37,6 +37,14 @@ for starter in "$TESTS_DIR"/*/starter; do
   [[ -d "$starter" ]] || continue
   case_name="$(basename "$(dirname "$starter")")"
 
+  # On failure partway through a case, remove its partial provisioning
+  # rather than leaving a half-written starter that a retry would trust.
+  # $clean isn't assigned yet at this point in the iteration, so this arm
+  # only covers $starter — it is re-armed below to add $clean once that
+  # path exists, so an early failure never rm -rf's the previous
+  # (unrelated, already-finished) case's starter-clean/.
+  trap 'rm -rf "$starter/.lola" "$starter/.claude" "$starter/.opencode" "$starter/.gitconfig"' ERR
+
   # Clean prior provisioning (module files + CLI integration dirs)
   rm -rf "$starter/.lola" "$starter/.claude" "$starter/.opencode"
 
@@ -102,15 +110,19 @@ GIT
   # Create starter-clean/ — same source, no module artifacts. Used by
   # pack_id=none baseline runs for genuine bare-model comparison.
   clean="$TESTS_DIR/$case_name/starter-clean"
+  trap 'rm -rf "$starter/.lola" "$starter/.claude" "$starter/.opencode" "$starter/.gitconfig" "$clean"' ERR
   rm -rf "$clean"
   cp -a "$starter" "$clean"
   rm -rf "$clean/.lola" "$clean/.claude" "$clean/.opencode"
   for f in AGENTS.md CLAUDE.md; do
     if [[ -f "$clean/$f" ]]; then
-      sed -i '/<!-- lola:module:.*:start -->/,/<!-- lola:module:.*:end -->/d' "$clean/$f"
-      sed -i '/<!-- lola:skills:start -->/,/<!-- lola:skills:end -->/d' "$clean/$f"
-      sed -i '/<!-- lola:instructions:start -->/d; /<!-- lola:instructions:end -->/d' "$clean/$f"
-      sed -i '/^## Lola Skills$/,/^<!-- lola:skills:start -->/d' "$clean/$f" 2>/dev/null || true
+      # -i.bak + rm (not bare -i) for BSD/macOS sed portability — GNU sed's
+      # -i takes an optional inline suffix, BSD sed's -i requires one.
+      sed -i.bak '/<!-- lola:module:.*:start -->/,/<!-- lola:module:.*:end -->/d' "$clean/$f"
+      sed -i.bak '/<!-- lola:skills:start -->/,/<!-- lola:skills:end -->/d' "$clean/$f"
+      sed -i.bak '/<!-- lola:instructions:start -->/d; /<!-- lola:instructions:end -->/d' "$clean/$f"
+      sed -i.bak '/^## Lola Skills$/,/^<!-- lola:skills:start -->/d' "$clean/$f" 2>/dev/null || true
+      rm -f "$clean/$f.bak"
       if [[ ! -s "$clean/$f" ]] || ! grep -q '[^[:space:]]' "$clean/$f" 2>/dev/null; then
         rm -f "$clean/$f"
       fi
@@ -120,6 +132,10 @@ GIT
   provisioned=$((provisioned + 1))
   echo "provision.sh: provisioned $case_name (+ starter-clean)"
 done
+# Clear the per-iteration trap — otherwise a failure after the loop (e.g.
+# the provisioned-count check below) would fire it with the last
+# iteration's $starter/$clean and delete an already-finished case.
+trap - ERR
 
 if [[ $provisioned -eq 0 ]]; then
   echo "provision.sh: no starter dirs found under $TESTS_DIR" >&2

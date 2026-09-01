@@ -8,20 +8,22 @@ tasks:
     desc: Validate schema fixtures — testdata/valid/* must pass cue vet, testdata/invalid/* must fail it
     cmds:
       - |
-        set -u
+        set -uo pipefail
         fail=0
         for f in testdata/valid/*.yaml; do
-          if cue vet prd.cue "$f" -d '#PRDDocument' >/dev/null 2>&1; then
+          if out=$(cue vet prd.cue "$f" -d '#PRDDocument' 2>&1); then
             echo "PASS (valid)   $(basename "$f")"
           else
-            echo "FAIL (valid)   $(basename "$f") — expected to pass but cue vet errored"; fail=1
+            echo "FAIL (valid)   $(basename "$f") — expected to pass but cue vet errored:"
+            echo "$out" | sed 's/^/    /'
+            fail=1
           fi
         done
         for f in testdata/invalid/*.yaml; do
-          if cue vet prd.cue "$f" -d '#PRDDocument' >/dev/null 2>&1; then
+          if out=$(cue vet prd.cue "$f" -d '#PRDDocument' 2>&1); then
             echo "FAIL (invalid) $(basename "$f") — expected cue vet to error but it passed"; fail=1
           else
-            echo "PASS (invalid) $(basename "$f")"
+            echo "PASS (invalid) $(basename "$f") — $(echo "$out" | head -1)"
           fi
         done
         exit $fail
@@ -29,6 +31,7 @@ tasks:
   vet-examples:
     desc: Validate example PRDs against the schema
     cmds:
-      - cue vet prd.cue examples/parent-prd.yaml -d '#PRDDocument'
-      - cue vet prd.cue examples/phase-prd.yaml -d '#PRDDocument'
-      - cue vet prd.cue examples/phase-prd-draft.yaml -d '#PRDDocument'
+      - |
+        for f in examples/*.yaml; do
+          cue vet prd.cue "$f" -d '#PRDDocument'
+        done

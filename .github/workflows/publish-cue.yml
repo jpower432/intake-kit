@@ -20,6 +20,14 @@ jobs:
         uses: cue-lang/setup-cue@a93fa358375740cd8b0078f76355512b9208acb1 # v1.0.1
         with:
           version: "v0.17.0"
+      - name: Install Task
+        uses: go-task/setup-task@a00fbb05ce67b35648be3c78cbc9fd85354c757e # v2.2.0
+        with:
+          version: "3.50.0"
+      - name: Validate schema before publish
+        run: |
+          task vet-examples
+          task test
       - name: Login to CUE Central Registry
         uses: cue-labs/registry-login-action@66d40052b0206031343e17173425fa10508968d0 # v1.0.3
       - name: Publish module

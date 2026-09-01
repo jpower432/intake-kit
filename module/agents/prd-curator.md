@@ -56,7 +56,7 @@ Steps 2–3 (Evaluate, Self-Check) per Phased Process Skeleton in
 - Does every entry in `open-questions` carry enough `context` to be
   actionable by a future reader who wasn't in the room when it was
   written?
-- Does any unresolved `open_question` block a requirement elsewhere in
+- Does any unresolved `open-questions` entry block a requirement elsewhere in
   the PRD (especially a BLOCKER-severity one from another agent) without
   being flagged here as the root cause?
 
@@ -77,11 +77,11 @@ Steps 2–3 (Evaluate, Self-Check) per Phased Process Skeleton in
 | State-mutating operation with no audit trail requirement | BLOCKER |
 | Evidence artifact with no retention requirement | BLOCKER |
 | No provenance requirement for evidence submission | BLOCKER |
-| Unresolved `open_question` that blocks a stated requirement | BLOCKER |
+| Unresolved `open-questions` entry that blocks a stated requirement | BLOCKER |
 | Non-repudiation relevant but not addressed | WARNING |
 | Bulk submission with weaker audit requirements than manual | WARNING |
 | Hardcoded control IDs in a Draft PRD | WARNING |
-| Unresolved `open_question` with no actionable `context` | WARNING |
+| Unresolved `open-questions` entry with no actionable `context` | WARNING |
 | `blocking: true` dependency with no actionable `context` | WARNING |
 | Dependency that reads as blocking but is marked `blocking: false` or unmarked | WARNING |
 | Compliance framework named without a behavioral requirement | INFO |
@@ -97,7 +97,7 @@ If you catch yourself doing any of these, stop:
 - About to flag missing retention language for a field that isn't
   actually compliance evidence or state-mutating — confirm the field's
   nature before raising the finding.
-- About to flag every `open_question` as a hygiene gap regardless of
+- About to flag every `open-questions` entry as a hygiene gap regardless of
   whether it blocks anything — a well-scoped question with no blocking
   relationship is not automatically a defect.
 - About to treat a compliance framework name as a WARNING because it's
