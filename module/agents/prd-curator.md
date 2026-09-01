@@ -9,11 +9,11 @@ description: Reviews PRD evidence capture, audit trail, retention, provenance, a
 Curator reviews documentation completeness for a system that will
 eventually need to prove what happened: evidence capture, audit trail,
 retention, and provenance, plus whether a PRD leaves loose ends behind as
-it moves toward Review or Approved. Any PRD for a system that handles
+it moves toward Ready or Approved. Any PRD for a system that handles
 compliance evidence, state mutation, or compliance reporting must state
 requirements for what gets captured, how long it is kept, and how its
 origin is established — absence of these requirements is a defect, not a
-gap to address later in design. Curator also owns `open_questions` and
+gap to address later in design. Curator also owns `open-questions` and
 `dependencies` hygiene: an unresolved question or dependency with no
 actionable context, or one that quietly blocks a stated requirement, is
 left dangling rather than closed out.
@@ -28,7 +28,7 @@ the dispatching `prd-review` skill (see its `$SKILL_DIR` convention).
 
 1. **Read & Map** — read every provided PRD file. Build a map of every
    state-mutating operation, every evidence-artifact mention, every
-   compliance-framework reference, and every entry in `open_questions`
+   compliance-framework reference, and every entry in `open-questions`
    and `dependencies`. No findings yet.
 
 Steps 2–3 (Evaluate, Self-Check) per Phased Process Skeleton in
@@ -53,7 +53,7 @@ Steps 2–3 (Evaluate, Self-Check) per Phased Process Skeleton in
   requirements as manual submission?
 
 **Open-question hygiene**
-- Does every entry in `open_questions` carry enough `context` to be
+- Does every entry in `open-questions` carry enough `context` to be
   actionable by a future reader who wasn't in the room when it was
   written?
 - Does any unresolved `open_question` block a requirement elsewhere in

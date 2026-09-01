@@ -14,26 +14,27 @@ stakeholders:
     handle: "@handle"
 
 state:
-  status: Draft
+  status: Ready
 
 dependencies:
   - description: "What this phase depends on (another team, system, or decision)"
     blocking: true
     context: "Why it's blocking and what unblocks it"
 
-workflow:
-  label: "Example Workflow"
-  steps:
-    - label: "Step One"
-      description: "What happens in this step."
-      implements:
-        - FR-MFP-001
+journeys:
+  - label: "Example Journey"
+    executor: example-executor
+    steps:
+      - label: "Step One"
+        description: "What happens in this step."
+        implements:
+          - FR-MFP-001
 
-functional_requirements:
+functional-requirements:
   - id: FR-MFP-001
     title: "Example Functional Requirement"
-    persona: "Example Persona"
-    acceptance_criteria:
+    satisfies: [DO-MF-001]
+    acceptance-criteria:
       - id: AC-MFP-001-01
         description: "First acceptance criterion for FR-MFP-001."
       - id: AC-MFP-001-02

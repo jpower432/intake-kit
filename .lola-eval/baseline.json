@@ -1,0 +1,7 @@
+{
+  "_schema_version": 2,
+  "claude-code/claude-sonnet-4-6/case-001-unknown-executor/project/none": {
+    "composite": 0.925,
+    "rubric_pass_threshold": 0.6
+  }
+}

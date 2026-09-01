@@ -1,0 +1,146 @@
+# .taskfiles/lola-eval.yml — eval automation for intake-kit.
+#
+# Adapted from the Review Council project (Apache-2.0):
+#   https://github.com/lolables/lola-mod-review-council
+# See the repository NOTICE file for attribution.
+#
+# Mirrors the lola-mod-review-council methodology: the harness is
+# bootstrapped into a project-local .venv via uv on first use, so no
+# system RPM or sudo is required. A lola-eval already on PATH wins.
+version: "3"
+
+vars:
+  VENV_DIR: "{{.ROOT_DIR}}/.venv"
+  # Floating on main: upstream ships no tags, so tracking the branch is how
+  # fixes arrive. `task lola-eval:update` is the only thing that advances an
+  # already-bootstrapped checkout. Edit to pin (…git@<sha>) for reproducibility.
+  LOLA_EVAL_SPEC: "lola-eval @ git+https://github.com/complytime-labs/lola-eval.git@main"
+  # A host lola-eval (RPM, pipx) wins; otherwise the bootstrap makes the
+  # .venv path real. Task resolves this while parsing, before any dep runs,
+  # so it must name a fixed path rather than report "not installed".
+  LOLA_EVAL:
+    sh: command -v lola-eval 2>/dev/null || echo "{{.VENV_DIR}}/bin/lola-eval"
+  BOOTSTRAP: "{{.ROOT_DIR}}/.taskfiles/scripts/ensure-lola-eval.sh"
+  PROVISION: "{{.ROOT_DIR}}/.lola-eval/provision.sh"
+  MODULE_DIR: "{{.ROOT_DIR}}/module"
+  RESULTS_DIR: "{{.ROOT_DIR}}/.lola-eval"
+
+# XDG_CACHE_HOME must be set so the eval provider and the sandbox reset
+# resolve the same cache root. Git vars isolate the eval's git operations
+# from the caller's global/system config.
+env:
+  XDG_CACHE_HOME:
+    sh: echo "${XDG_CACHE_HOME:-$HOME/.cache}"
+  XDG_STATE_HOME:
+    sh: echo "${XDG_STATE_HOME:-$HOME/.local/state}"
+  GIT_CONFIG_GLOBAL: /dev/null
+  GIT_CONFIG_SYSTEM: /dev/null
+  GIT_AUTHOR_NAME: Lola Eval
+  GIT_AUTHOR_EMAIL: lola-eval@invalid
+  GIT_COMMITTER_NAME: Lola Eval
+  GIT_COMMITTER_EMAIL: lola-eval@invalid
+
+tasks:
+  default:
+    silent: true
+    cmd: task --list 2>/dev/null
+
+  _ensure-lola-eval:
+    internal: true
+    desc: Install the harness into .venv when it is missing or does not match the spec
+    cmds:
+      - bash "{{.BOOTSTRAP}}" "{{.LOLA_EVAL}}" "{{.VENV_DIR}}" "{{.LOLA_EVAL_SPEC}}"
+
+  _ensure-init:
+    internal: true
+    desc: Auto-run lola-eval init when config.yaml is missing
+    deps: [_ensure-lola-eval]
+    status:
+      - test -f "{{.RESULTS_DIR}}/config.yaml"
+    cmds:
+      - "{{.LOLA_EVAL}} init"
+
+  _preflight:
+    internal: true
+    desc: Guard — verify eval runtime deps (promptfoo, bubblewrap) are on PATH
+    silent: true
+    preconditions:
+      - sh: command -v promptfoo >/dev/null 2>&1
+        msg: |
+          promptfoo not found on PATH. Install the pinned version:
+            npm install -g promptfoo@0.121.19
+          lola-eval shells to `npx --no-install promptfoo` and will NOT
+          download it — every cell fails `no_run_produced` until present.
+      - sh: command -v bwrap >/dev/null 2>&1
+        msg: |
+          bubblewrap (bwrap) not found — eval agents would run UNSANDBOXED
+          and read host config/skills, skewing results. Install:
+            sudo dnf install -y bubblewrap
+
+  doctor:
+    desc: Verify lola-eval installation and config (bootstraps harness; no API cost)
+    deps: [_ensure-init]
+    cmds:
+      - "{{.LOLA_EVAL}} doctor"
+
+  update:
+    desc: Reinstall the harness from the current tip of LOLA_EVAL_SPEC
+    cmds:
+      - bash "{{.BOOTSTRAP}}" --force "{{.LOLA_EVAL}}" "{{.VENV_DIR}}" "{{.LOLA_EVAL_SPEC}}"
+
+  provision:
+    desc: Copy current module/ into all starter repos
+    cmds:
+      - bash "{{.PROVISION}}" "{{.MODULE_DIR}}"
+    sources:
+      - "{{.MODULE_DIR}}/**/*"
+
+  test:
+    desc: Provision starters and run full eval suite
+    deps: [provision, _ensure-init, _preflight]
+    cmds:
+      - "{{.LOLA_EVAL}} test"
+
+  test-case:
+    desc: Run a single eval case (set CASE=case-001-unknown-executor)
+    deps: [provision, _ensure-init, _preflight]
+    requires:
+      vars: [CASE]
+    cmds:
+      - "{{.LOLA_EVAL}} test --case {{.CASE}}"
+
+  baseline-update:
+    desc: Promote last-run results to baseline.json
+    deps: [_ensure-init]
+    cmds:
+      - "{{.LOLA_EVAL}} baseline update"
+
+  baseline-diff:
+    desc: Compare current baseline against last run
+    deps: [_ensure-init]
+    cmds:
+      - "{{.LOLA_EVAL}} baseline diff"
+
+  report:
+    desc: Generate HTML report from latest run
+    deps: [_ensure-init]
+    cmds:
+      - "{{.LOLA_EVAL}} report"
+
+  clean:
+    desc: Remove ephemeral eval artifacts
+    deps: [_ensure-init]
+    cmds:
+      - "{{.LOLA_EVAL}} clean --cache"
+      - |
+        for starter in {{.ROOT_DIR}}/.lola-eval/tests/*/starter; do
+          rm -rf "$starter/.lola" "$starter/.claude" "$starter/.opencode" "$starter/.gitconfig"
+        done
+      - echo "Cleaned eval artifacts and provisioned starters"
+
+  clean-all:
+    desc: Remove all eval artifacts including runs.db
+    deps: [_ensure-init]
+    cmds:
+      - "{{.LOLA_EVAL}} clean --cache --state"
+      - task: clean

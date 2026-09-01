@@ -1,0 +1,19 @@
+header:
+  schema-version: "0.1.0"
+  version: "0.1.0"
+  last-updated: "2026-01-01"
+slug: my-feature
+title: "My Feature"
+description: "An initiative."
+job-executors:
+  - id: auditor
+    label: "Compliance Auditor"
+    core-job: "verify a control set is met before an external audit"
+nonfunctional-requirements:
+  - id: NFR-MF-001
+    title: "Example NFR"
+    description: "A constraint."
+desired-outcomes:
+  - id: DO-MF-001
+    statement: "minimize the time it takes to detect a misconfigured control before an audit"
+    executor-id: auditor

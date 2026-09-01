@@ -74,10 +74,10 @@ finding (see Severity Calibration).
 **For each FR:**
 - Does it cover exactly one concern?
 - Does it describe behavior, not implementation?
-- Does its `persona` field read as a real, well-formed string (Guard
-  separately checks that string against the parent's `personas` list —
-  Tester's concern is whether the string itself is meaningful, not
-  whether it matches the parent)?
+- Does each journey's `executor` id read as a real, well-formed job
+  executor (Guard separately matches that id against the parent's
+  `job-executors` list — you only assess whether the executor makes the
+  journey's ACs judgeable from a real user's standpoint)?
 - Do its ACs describe user-observable behavior, not implementation
   detail?
 - Do its ACs avoid naming protocols, HTTP status codes, message schemas,
@@ -86,6 +86,17 @@ finding (see Severity Calibration).
   ("exposed via HTTPS," "returns 200 OK")?
 - Does any AC restate NFR behavior instead of establishing where/when the
   FR applies?
+
+**For each `desired-outcomes` entry's `statement`:**
+- `#DesiredOutcome.statement` is free text — CUE cannot enforce its
+  shape, so this check is yours alone.
+- Does it read as a well-formed outcome statement: a direction
+  (minimize/increase/reduce), a metric/unit, an object of control, and a
+  context clarifier?
+- Does it restate a feature or solution instead of stating a
+  solution-agnostic need?
+- Does it lack a measurable direction, making it impossible to tell
+  whether the outcome improved or regressed?
 
 ## Severity Calibration
 
@@ -102,6 +113,7 @@ finding (see Severity Calibration).
 | Mixed concerns in one requirement | WARNING |
 | Table-stakes AC | WARNING |
 | NFR behavior restated in an AC | WARNING |
+| `desired-outcomes` statement restates a feature or lacks a measurable direction | BLOCKER |
 | Minor phrasing imprecision | INFO |
 
 ## Out of Scope
@@ -112,9 +124,9 @@ See Domain Ownership in `reviewer-protocol.md` for the full map.
 
 If you catch yourself doing any of these, stop:
 
-- About to flag a persona string as "wrong" because it doesn't match the
-  parent PRD — that comparison is Guard's job; you only judge whether the
-  string itself is well-formed.
+- About to flag an executor id as "wrong" because it doesn't match the
+  parent PRD's `job-executors` list — that comparison is Guard's job; you
+  only judge whether the executor makes the journey's ACs judgeable.
 - About to flag a named external service purely because it creates a
   deployment assumption — that's Operator's domain unless the issue is
   specifically that it's a named technology in Draft.
@@ -135,6 +147,10 @@ If you catch yourself doing any of these, stop:
 - About to let an AC pass because it names a status code but "everyone
   knows what that means" — table-stakes and implementation-detail ACs
   are findings regardless of how conventional they are.
+- About to accept a `desired-outcomes` statement because it sounds
+  aspirational — check it actually has a direction, a metric/unit, an
+  object of control, and a context clarifier; missing any of these is a
+  BLOCKER, not a style nit.
 
 ## Rationalization Table
 
@@ -147,6 +163,7 @@ If you catch yourself doing any of these, stop:
 | "The technology name is only in a comment-like aside, not the main requirement text." | Location doesn't matter — what matters is whether it's an implementation choice (BLOCKER) or a compatibility constraint (INFO); classify it, don't wave it through on placement. |
 | "We need this data model for compatibility, so naming it is fine — no need to check further." | State that it's a required compatibility constraint explicitly if the PRD doesn't already say so; an unlabeled name is a WARNING (ambiguous), not an automatic pass. |
 | "It's just in the description paragraph, not a real requirement field." | The description is exactly where an implementation choice most often hides — check it like any other field. |
+| "The outcome statement names a real user benefit, that's good enough." | A benefit without a direction, metric/unit, object of control, and context clarifier can't be judged pass/fail later — flag it, don't credit the intent. |
 
 ## Output
 

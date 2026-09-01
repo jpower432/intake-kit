@@ -1,0 +1,28 @@
+header:
+  schema-version: "0.1.0"
+  version: "0.1.0"
+  last-updated: "2026-01-01"
+
+slug: link-shortener
+title: "Link Shortener"
+description: >-
+  Help users turn a long URL into a short, shareable link.
+
+stakeholders:
+  - role: "Product Owner"
+    handle: "@owner"
+  - role: "Requestor"
+    handle: "@requestor"
+    approver: true
+  - role: "Stakeholder Representative"
+    handle: "@rep"
+
+job-executors:
+  - id: end-user
+    label: "End User"
+    core-job: "turn a long URL into a short link I can share and reuse"
+
+desired-outcomes:
+  - id: DO-LS-001
+    statement: "minimize the time it takes to create a short link so sharing isn't interrupted"
+    executor-id: end-user

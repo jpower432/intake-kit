@@ -1,0 +1,6 @@
+header: {schema-version: "0.1.0", version: "0.1.0", last-updated: "2026-01-01"}
+title: "X"
+job-executors:
+  - {id: a, label: "A", core-job: "do a thing in a context"}
+kpis:
+  - {metric: "m", target: "t"}

@@ -1,11 +1,11 @@
 ---
-description: Run the PRD Review Council (5 specialist agents) against a PRD family.
+description: Run the PRD Review Council against a PRD family — Guard review pass by default, or the full five-agent council with --full.
 ---
 
 Run the PRD Review Council on the specified PRD files.
 
-Usage: /prd-review [--serial] [--schema <path>] <parent.yaml> [phase1.yaml phase2.yaml ...]
+Usage: /prd-review [--full] [--serial] [--schema <path>] <parent.yaml> [phase1.yaml phase2.yaml ...]
 
-Checks CUE schema conformance (registry first, falling back to `--schema <path>` if the published schema can't be resolved), then dispatches 5 specialist agents (Guard, Adversary, Tester, Operator, Curator) against the PRD family and emits a BLOCKED / NEEDS REVISION / APPROVED verdict. Default `parallel` mode dispatches all 5 as independent subagents (faster, ~5x PRD ingestion cost). `--serial` runs all 5 personas sequentially in one context, reusing the already-read PRD text (slower, ~1x ingestion cost).
+Checks CUE schema conformance and FR/journey coverage in one `cue vet` pass (the structural floor), then selects review depth for a `Draft` PRD by invocation: by default a fresh PRD gets a `cue vet` + Guard review (gates nothing); with `--full` a matured PRD gets the full five agents (Guard, Adversary, Tester, Operator, Curator) that gate `Draft → Ready` — on APPROVED the skill asks the author to confirm before mutating `state.status` to `Ready`, and emits a BLOCKED / NEEDS REVISION / APPROVED verdict. A `Ready` or later PRD triggers no gating dispatch; `Ready → Approved` is a manual human sign-off outside this command. Default `parallel` mode dispatches agents as independent subagents; `--serial` runs them sequentially in one context for lower token cost.
 
 $ARGUMENTS
