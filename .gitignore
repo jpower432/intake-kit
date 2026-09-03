@@ -24,7 +24,7 @@ node_modules/
 
 # Working artifacts (never committed)
 docs/superpowers/
-openspec
+openspec/
 
 # Unbound Force — managed by uf init
 # Runtime data under .uf/ (databases, caches, locks, logs)
