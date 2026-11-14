@@ -1,0 +1,8 @@
+header: {schema-version: "0.1.0", version: "0.1.0", last-updated: "2026-01-01", parent: my-feature}
+phase: "P1"
+workflow:
+  label: "J"
+  steps:
+    - {label: "S", description: "d", implements: [FR-X-001]}
+functional-requirements:
+  - {id: FR-X-001, title: "T", satisfies: []}

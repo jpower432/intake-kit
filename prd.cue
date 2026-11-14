@@ -164,6 +164,10 @@ package prds
 		}
 		title: string & !=""
 		"job-executors": [...#JobExecutor] & [_, ...]
+		// Optional here by design: a Draft parent may not have matured
+		// its outcomes yet. The prd-guard agent enforces the stricter
+		// rule the schema can't see on its own — at least one non-empty
+		// entry is required once any phase reaches Ready or Approved.
 		"desired-outcomes"?: [...#DesiredOutcome]
 	}
 }

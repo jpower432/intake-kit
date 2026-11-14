@@ -1,0 +1,20 @@
+header:
+  schema-version: "0.1.0"
+  version: "0.1.0"
+  last-updated: "2026-01-01"
+  parent: my-feature
+slug: my-feature-phase1
+phase: "Phase 1"
+state:
+  status: Draft
+journeys:
+  - label: "Example journey"
+    executor: example-executor
+    steps:
+      - label: "Step one"
+        description: "Step referencing a non-existent FR."
+        implements: [FR-NONEXISTENT-001]
+functional-requirements:
+  - id: FR-MFP-001
+    title: "Real functional requirement"
+    satisfies: []
