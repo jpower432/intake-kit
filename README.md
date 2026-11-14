@@ -1,21 +1,12 @@
 # Intake Kit
 
-A structured product requirements intake toolkit: CUE-validated PRD authoring paired with a multi-agent AI review
-council that gates a PRD from Draft to Ready.
+Intake Kit validates YAML product requirements with CUE and reviews them with
+an AI review council.
 
-Installs as a [Lola](https://github.com/LobsterTrap/lola) module and works with Claude Code, Cursor, Gemini CLI, and
-OpenCode.
+## Installation
 
-## What's in the box
-
-- **CUE schema** (`prd.cue`) — validates PRD YAML: stakeholders, functional requirements, journeys, acceptance
-  criteria, and lifecycle state.
-- **prd-review skill** (`module/skills/prd-review/`) — checks schema conformance, then dispatches review agents against
-  a PRD family and emits a BLOCKED / NEEDS REVISION / APPROVED verdict. A default Guard-only pass gates nothing;
-  `--full` runs the 5-agent council and is the only pass that gates `Draft → Ready`.
-- **Example PRDs** (`examples/`) — parent and phase templates to copy and fill in.
-
-## Install
+Install with [Lola](https://github.com/LobsterTrap/lola) in an AI assistant
+that supports Lola skills:
 
 ```bash
 lola install github.com/unbound-force/intake-kit
@@ -23,58 +14,45 @@ lola install github.com/unbound-force/intake-kit
 
 ## Usage
 
-Validate a PRD against the schema (requires [CUE](https://cuelang.org/docs/introduction/installation/)):
+Copy a parent and phase PRD from [examples/](examples/). The parent describes
+the initiative, job executors, desired outcomes, and scope; each phase defines
+functional requirements, journeys, and delivery state.
+
+From a checkout of this repository, validate your PRD with
+[CUE](https://cuelang.org/docs/introduction/installation/):
 
 ```bash
 cue vet prd.cue -d '#PRDDocument' your-prd.yaml
 ```
 
-Run the review council (in any AI assistant that supports Lola skills):
+In your assistant, run a Guard review while drafting or the full five-agent
+council when the PRD is ready for review:
 
 ```
 /prd-review prds/my-feature.yaml prds/my-feature-phase1.yaml          # Guard-only, gates nothing
 /prd-review --full prds/my-feature.yaml prds/my-feature-phase1.yaml   # full council, gates Draft → Ready
 ```
 
-## PRD document model
+The full review asks for confirmation before changing `Draft` to `Ready`.
+`Ready` phases require acceptance criteria and outcome references on every
+functional requirement. Human approval is a separate, manual step.
 
-PRDs are structured YAML. A **parent PRD** defines the initiative (title, description, job executors, NFRs, scope) and
-carries `desired-outcomes` — solution-agnostic, measurable needs. **Phase PRDs** reference the parent and carry
-delivery fields (FRs, journeys, state; ACs required only at Ready). An FR `satisfies` a desired outcome (required at
-Ready); an NFR may optionally.
+### Structured Metadata
 
-```
-parent-prd.yaml          # what + why
-├── phase1-prd.yaml      # phase 1 FRs, journeys, state
-└── phase2-prd.yaml      # phase 2 FRs, journeys, state
-```
+Optional fields record decisions on open questions, feature-to-requirement
+mappings, lifecycle diagrams, a reading guide, glossary terms, and phase-exit
+criteria. Existing documents can omit them. See the
+[structured parent](examples/structured-parent.yaml) and
+[phase](examples/structured-phase.yaml) examples for the proposed, unreleased
+0.3.0 schema additions.
 
-`cue vet` validates each file independently (structure + in-file FR/journey coverage). Cross-document checks — a
-journey executor missing from the parent, a `satisfies` reference naming no real outcome, and similar — need reasoning
-across files and are owned by the review council's Guard agent, not the schema.
-
-See `examples/` for the full field set.
-
-## Project layout
-
-```
-module/                  ← installable Lola module
-  agents/                ← review agent definitions
-  skills/prd-review/     ← schema check + agent dispatch + verdict
-  commands/              ← command entry points
-prd.cue                  ← CUE schema (published to registry)
-cue.mod/                 ← CUE module definition
-examples/                ← example PRD YAML files
-```
-
-The review council roster, dispatch modes, and verdict phases live in
-`module/skills/prd-review/SKILL.md`. See [AGENTS.md](AGENTS.md) for the
-developer guide.
+The review council checks whether requirements meet user needs and whether
+journey executors and outcome references match the parent. For development
+and review details, see [AGENTS.md](AGENTS.md) and the
+[review skill](module/skills/prd-review/SKILL.md).
 
 ## License
 
-Apache-2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE).
-
-The lola-eval harness scaffolding under `.taskfiles/` is adapted from the
-[Review Council](https://github.com/lolables/lola-mod-review-council) project (Apache-2.0); see [NOTICE](NOTICE) for
-attribution.
+Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE), including attribution
+for the lola-eval scaffolding adapted from
+[Review Council](https://github.com/lolables/lola-mod-review-council).

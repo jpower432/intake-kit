@@ -29,6 +29,8 @@ tasks:
   vet-examples:
     desc: Validate example PRDs against the schema
     cmds:
-      - cue vet prd.cue examples/parent-prd.yaml -d '#PRDDocument'
-      - cue vet prd.cue examples/phase-prd.yaml -d '#PRDDocument'
-      - cue vet prd.cue examples/phase-prd-draft.yaml -d '#PRDDocument'
+      - |
+        set -e
+        for f in examples/*.yaml; do
+          cue vet prd.cue "$f" -d '#PRDDocument'
+        done

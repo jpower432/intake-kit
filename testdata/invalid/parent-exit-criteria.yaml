@@ -1,0 +1,6 @@
+header: {schema-version: "0.3.0", version: "1.0.0", last-updated: "2026-11-13"}
+title: Phase-only exit criteria on a parent
+job-executors:
+  - {id: owner, label: Owner, core-job: Maintain content}
+phase-exit-criteria:
+  - description: Demonstrate review.

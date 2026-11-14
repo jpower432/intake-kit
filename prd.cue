@@ -31,14 +31,14 @@ package prds
 }
 
 #JobExecutor: {
-	id:       string & =~"^[a-z][a-z0-9-]*$"
-	label:    string & !=""
+	id:         string & =~"^[a-z][a-z0-9-]*$"
+	label:      string & !=""
 	"core-job": string & !=""
 }
 
 #DesiredOutcome: {
-	id:           string & =~"^DO-[A-Z]+-\\d{3}$"
-	statement:    string & !=""
+	id:            string & =~"^DO-[A-Z]+-\\d{3}$"
+	statement:     string & !=""
 	"executor-id": string & =~"^[a-z][a-z0-9-]*$"
 }
 
@@ -62,8 +62,40 @@ package prds
 }
 
 #OpenQuestion: {
-	question: string & !=""
-	context?: string
+	question:  string & !=""
+	context?:  string
+	decision?: #Decision
+}
+
+#Decision: {
+	id:     =~"^DEC-[A-Z]+-[0-9]{3}$"
+	status: "Open" | "Resolved"
+	blocks!: [...{
+		phase:    =~"^[a-z][a-z0-9-]*$"
+		activity: string & !=""
+	}]
+	authority: {
+		status:      "confirmed" | "unconfirmed"
+		description: string & !=""
+	}
+	resolution?: string & !=""
+	rationale?:  string & !=""
+	if status == "Resolved" {
+		resolution: string & !=""
+		rationale:  string & !=""
+	}
+}
+
+#FeatureMapping: {
+	feature: string & !=""
+	"fr-ids": [...=~"^FR-[A-Z]+-[0-9]{3}$"] & [_, ...]
+	"allocation-status": "allocated" | "unconfirmed"
+	evidence:            string & !=""
+}
+
+#PhaseExitCriterion: {
+	description: string & !=""
+	"requirement-ids"?: [...=~"^(FR|NFR)-[A-Z]+-[0-9]{3}$|^AC-[A-Z]+-[0-9]{3}-[0-9]{2}$"] & [_, ...]
 }
 
 #Dependency: {
@@ -77,7 +109,7 @@ package prds
 	remarks?: string
 }
 
-#PRDDocument: {
+#PRDDocument: D={
 	header: #PRDHeader
 	slug?:  string & =~"^[a-z][a-z0-9-]*$"
 
@@ -98,6 +130,11 @@ package prds
 	dependencies?: [...#Dependency] & [_, ...]
 
 	"open-questions"?: [...#OpenQuestion]
+	"feature-mappings"?: [...#FeatureMapping] & [_, ...]
+	lifecycle?: {diagram: string & !="", description: string & !=""}
+	"reading-guide"?: string & !=""
+	glossary?: [...{term: string & !="", definition: string & !=""}] & [_, ...]
+	"phase-exit-criteria"?: [...#PhaseExitCriterion] & [_, ...]
 
 	if phase != _|_ {
 		journeys: [...#Journey] & [_, ...]
@@ -122,6 +159,9 @@ package prds
 		}
 	}
 	if phase == _|_ {
+		if D["phase-exit-criteria"] != _|_ {
+			_check_parent_exit: {"phase-exit-criteria": false & true}
+		}
 		title: string & !=""
 		"job-executors": [...#JobExecutor] & [_, ...]
 		"desired-outcomes"?: [...#DesiredOutcome]

@@ -1,0 +1,24 @@
+header:
+  schema-version: 0.3.0
+  version: 1.0.0
+  last-updated: '2026-11-13'
+  parent: structured
+slug: structured-phase1
+phase: Maintenance
+state:
+  status: Draft
+journeys:
+  - label: Maintenance
+    executor: owner
+    steps:
+      - label: Propose
+        description: Prepare content.
+        implements: [FR-MFP-001]
+functional-requirements:
+  - id: FR-MFP-001
+    title: Maintain content
+    satisfies: []
+    acceptance-criteria: []
+phase-exit-criteria:
+  - description: Demonstrate maintenance.
+    requirement-ids: [FR-MFP-001]

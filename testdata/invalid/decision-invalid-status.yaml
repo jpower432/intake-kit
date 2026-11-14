@@ -1,0 +1,11 @@
+header: {schema-version: "0.3.0", version: "1.0.0", last-updated: "2026-11-13"}
+title: Unsupported decision status
+job-executors:
+  - {id: owner, label: Owner, core-job: Maintain content}
+open-questions:
+  - question: Who approves?
+    decision:
+      id: DEC-MF-001
+      status: Deferred
+      blocks: []
+      authority: {status: unconfirmed, description: Content owner}
