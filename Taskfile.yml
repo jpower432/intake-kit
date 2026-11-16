@@ -8,7 +8,9 @@ tasks:
     desc: Validate schema fixtures — testdata/valid/* must pass cue vet, testdata/invalid/* must fail it
     cmds:
       - |
-        set -uo pipefail
+        set -euo pipefail
+        command -v cue >/dev/null || { echo 'FAIL: cue is required'; exit 1; }
+        cue vet prd.cue
         fail=0
         for f in testdata/valid/*.yaml; do
           if out=$(cue vet prd.cue "$f" -d '#PRDDocument' 2>&1); then
@@ -20,10 +22,21 @@ tasks:
           fi
         done
         for f in testdata/invalid/*.yaml; do
+          expected=''
+          if ! IFS= read -r expected < "${f%.yaml}.err" || [ -z "$expected" ]; then
+            echo "FAIL (invalid) $f: missing diagnostic expectation"; fail=1; continue
+          fi
+          if ! cue export "$f" -e header --out json >/dev/null; then
+            echo "FAIL (invalid) $f: fixture must be parseable YAML with a header"; fail=1; continue
+          fi
           if out=$(cue vet prd.cue "$f" -d '#PRDDocument' 2>&1); then
             echo "FAIL (invalid) $(basename "$f") — expected cue vet to error but it passed"; fail=1
+          elif [[ "$out" != *"$expected"* ]]; then
+            echo "FAIL (invalid) $f: expected diagnostic containing '$expected'"
+            echo "$out"
+            fail=1
           else
-            echo "PASS (invalid) $(basename "$f") — $(echo "$out" | head -1)"
+            echo "PASS (invalid) $(basename "$f"): $expected"
           fi
         done
         exit $fail

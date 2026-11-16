@@ -36,7 +36,9 @@ the dispatching `prd-review` skill (see its `$SKILL_DIR` convention).
    family (`features` may appear on the parent, on any phase file, or
    both — check each file, not just the parent), the family's
    `stakeholders`, and `state.status` per
-   phase. No findings yet.
+   phase. Include every document's `slug`, `feature-mappings`, decision
+   IDs and `blocks.phase` references, and `phase-exit-criteria` references.
+   No findings yet.
 
 Steps 2–3 (Evaluate, Self-Check) per Phased Process Skeleton in
 `reviewer-protocol.md` — for Guard, Evaluate also runs the Feature
@@ -125,6 +127,9 @@ For each `features` entry:
 **Cross-references and state**
 - Do open questions and context fields reference other PRDs by phase name
   or title, rather than by FR/NFR ID?
+- This prose convention excludes structured `feature-mappings.fr-ids` and
+  `phase-exit-criteria.requirement-ids`. Those fields intentionally use
+  canonical IDs, including a phase-exit reference to a parent NFR.
 - Is `state.status` present and one of `Draft`, `Ready`, `Approved`,
   `Superseded` for every phase?
 
@@ -148,6 +153,29 @@ For each `features` entry:
 - Does any FR duplicate work already delivered in a previously merged
   PRD (check `features` context for overlap)?
 
+**Structured family references**
+- CUE validates a mapping against local `features` and FR declarations when
+  those lists exist. When `features` is omitted, resolve the mapping's
+  `feature` against the parent's list. When the mapping's document has no
+  FR list, resolve its `fr-ids` across the supplied family's phases.
+  An undeclared feature or unknown FR in a complete family is a BLOCKER,
+  including when `allocation-status` is `unconfirmed`.
+- Check each phase-exit `requirement-ids` entry against the phase's FRs/ACs
+  or the parent/phase NFRs. CUE owns phase-local FR/AC existence; Guard owns
+  NFR inheritance and whether the description matches the cited requirement.
+  An unknown NFR in a complete family is a BLOCKER. A description that
+  contradicts its cited requirement is a WARNING.
+- Resolve each `decision.blocks.phase` to a phase document's `slug`, never
+  its display `phase` label. An unknown phase slug in a complete family is
+  a BLOCKER. Check decision IDs for duplicates across the family (BLOCKER).
+- If a required parent or phase file was not supplied, emit INFO identifying
+  the unverified reference and missing file instead of claiming the target
+  does not exist. Ask for the complete family in the fix.
+- Review mapping `evidence` against the stated allocation. `unconfirmed`
+  records uncertainty and is not itself a defect; an unsupported claim of
+  `allocated` is a WARNING. Curator owns decision authority, resolutions,
+  and activity-specific blocking; Guard owns reference existence.
+
 ## Severity Calibration
 
 | Finding type | Severity |
@@ -165,7 +193,11 @@ For each `features` entry:
 | Parent outcome declared but satisfied by no FR or NFR (ORPHAN_OUTCOME) | WARNING |
 | ID gap within a phase | WARNING |
 | FR IDs restart from 001 in a non-first phase (should continue) | WARNING |
-| Cross-reference uses an FR/NFR ID from another PRD instead of a name | WARNING |
+| Prose cross-reference uses an FR/NFR ID from another PRD instead of a name (structured mapping/exit references excluded) | WARNING |
+| Undeclared mapped feature, unknown mapped FR or exit NFR, unknown blocked phase slug in a complete family | BLOCKER |
+| Duplicate decision ID within the family | BLOCKER |
+| Mapping claims allocated without supporting evidence, or exit description contradicts cited requirement | WARNING |
+| Family reference cannot be checked because a target document was not supplied | INFO |
 | `state.status` absent | WARNING |
 | FR with no traceable user value | WARNING |
 | Value proposition absent or too vague to evaluate | WARNING |

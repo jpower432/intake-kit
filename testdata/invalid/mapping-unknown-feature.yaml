@@ -1,0 +1,9 @@
+header: {schema-version: 0.3.0, version: 1.0.0, last-updated: '2026-11-13'}
+title: Unknown feature
+job-executors: [{id: owner, label: Owner, core-job: Maintain content}]
+features: [FEATURE-1]
+feature-mappings:
+  - feature: FEATURE-2
+    fr-ids: [FR-MFP-001]
+    allocation-status: unconfirmed
+    evidence: Allocation awaiting confirmation.

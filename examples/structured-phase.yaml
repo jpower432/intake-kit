@@ -1,0 +1,45 @@
+header:
+  schema-version: 0.3.0
+  version: 1.0.0
+  last-updated: '2026-11-13'
+  parent: structured
+slug: structured-phase1
+phase: Decision capture
+state: {status: Draft}
+journeys:
+  - label: Resolve a review question
+    executor: author
+    steps:
+      - label: Record the answer
+        description: Retain the question and context alongside the answer and reason.
+        implements: [FR-SR-001]
+functional-requirements:
+  - id: FR-SR-001
+    title: Authors can retain a resolved question with its answer and rationale.
+    satisfies: [DO-SR-001]
+    acceptance-criteria:
+      - id: AC-SR-001-01
+        description: A resolved decision retains the original question, context, answer, and rationale.
+feature-mappings:
+  - feature: unbound-force/intake-kit#14
+    fr-ids: [FR-SR-001]
+    allocation-status: allocated
+    evidence: The journey's Record the answer step exercises decision retention in FR-SR-001.
+phase-exit-criteria:
+  - description: Demonstrate that a reviewer can trace a resolved question to its answer and reason.
+    requirement-ids: [FR-SR-001, AC-SR-001-01, NFR-SR-001]
+  - description: The product owner confirms the handoff to requirements authors.
+open-questions:
+  - question: Who decides whether the recorded answer closes a question?
+    context: The author needs a named decision maker before accepting an answer.
+    decision:
+      id: DEC-SR-002
+      status: Resolved
+      blocks:
+        - phase: structured-phase1
+          activity: Accept an answer to a review question
+      authority:
+        status: confirmed
+        description: Product owner, confirmed for requirements-review decisions.
+      resolution: The product owner confirms whether the answer closes the question.
+      rationale: The product owner is accountable for the intended behavior.

@@ -4,6 +4,24 @@ header:
   last-updated: "2026-11-13"
 slug: structured
 title: Structured example
+description: Maintain requirements that reviewers can understand without a meeting.
+lifecycle:
+  diagram: |
+    stateDiagram-v2
+      Draft --> Ready: Full council and author confirmation
+      Ready --> Approved: Human sign-off
+  description: |
+    **Draft** permits incomplete acceptance criteria. A full council review
+    and author confirmation advance the phase to Ready.
+reading-guide: |
+  Start with the overview, then read the [maintenance phase](structured-phase.yaml).
+glossary:
+  - term: Allocation
+    definition: A recorded link between a feature and the FRs that deliver it.
+nonfunctional-requirements:
+  - id: NFR-MF-001
+    title: Readable without a meeting
+    description: Reviewers can identify each requirement's purpose from the PRD.
 job-executors:
   - id: owner
     label: Owner

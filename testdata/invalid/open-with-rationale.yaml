@@ -1,0 +1,11 @@
+header: {schema-version: 0.3.0, version: 1.0.0, last-updated: '2026-11-13'}
+title: Open decision
+job-executors: [{id: owner, label: Owner, core-job: Maintain content}]
+open-questions:
+  - question: Who approves processing?
+    decision:
+      id: DEC-MF-001
+      status: Open
+      blocks: []
+      authority: {status: unconfirmed, description: Source owner}
+      rationale: They maintain the source.

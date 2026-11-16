@@ -18,7 +18,38 @@ functional-requirements:
   - id: FR-MFP-001
     title: Maintain content
     satisfies: []
-    acceptance-criteria: []
+    acceptance-criteria:
+      - id: AC-MFP-001-01
+        description: The owner can retain the reason for a content change.
 phase-exit-criteria:
   - description: Demonstrate maintenance.
-    requirement-ids: [FR-MFP-001]
+    requirement-ids: [FR-MFP-001, AC-MFP-001-01, NFR-MF-001]
+  - description: The owner confirms the maintenance handoff is complete.
+reading-guide: Read the parent before reviewing this phase's journey.
+lifecycle:
+  diagram: |
+    stateDiagram-v2
+      Draft --> Ready
+  description: The phase follows the parent's review lifecycle.
+glossary:
+  - term: Handoff
+    definition: Transfer of responsibility for maintaining the content.
+feature-mappings:
+  - feature: FEATURE-1
+    fr-ids: [FR-MFP-001]
+    allocation-status: allocated
+    evidence: The maintenance journey exercises FR-MFP-001.
+open-questions:
+  - question: Who approves processing?
+    context: The owner must be able to record changes without waiting for a release.
+    decision:
+      id: DEC-MF-002
+      status: Resolved
+      blocks:
+        - phase: structured-phase1
+          activity: Approve a maintenance change
+      authority:
+        status: confirmed
+        description: Source owner, confirmed during the maintenance handoff.
+      resolution: The source owner approves maintenance changes.
+      rationale: The source owner maintains the content and can explain each change.

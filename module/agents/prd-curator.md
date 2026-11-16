@@ -29,7 +29,9 @@ the dispatching `prd-review` skill (see its `$SKILL_DIR` convention).
 1. **Read & Map** — read every provided PRD file. Build a map of every
    state-mutating operation, every evidence-artifact mention, every
    compliance-framework reference, and every entry in `open-questions`
-   and `dependencies`. No findings yet.
+   and `dependencies`. For structured decisions, include `id`, `status`,
+   every `blocks` phase/activity pair, `authority`, `resolution`, and
+   `rationale`, retaining the original question and context. No findings yet.
 
 Steps 2–3 (Evaluate, Self-Check) per Phased Process Skeleton in
 `reviewer-protocol.md`.
@@ -70,6 +72,30 @@ Steps 2–3 (Evaluate, Self-Check) per Phased Process Skeleton in
 - Is any dependency that is clearly blocking left with `blocking: false`
   or omitted, understating its impact on the phase?
 
+**Structured decision hygiene**
+- When a question has `decision.status: Resolved`, treat it as a retained
+  decision record. Read its resolution and rationale against the original
+  question/context; do not report it as unresolved because it remains under
+  `open-questions`. CUE requires both fields; a resolution that fails to
+  answer the question or a rationale that fails to explain the choice is a
+  WARNING. Preserve the original question and context in any proposed fix.
+- For an Open decision, evaluate only the named `blocks` phase/activity
+  pairs. `blocks: []` means no declared blocking activity and is valid.
+  An Open decision preventing a stated requirement is a BLOCKER scoped to
+  that activity; never infer that every activity in its phase is blocked.
+  A Resolved decision's pairs record historical scope, not active blockers.
+- `authority` identifies operational decision-making authority, independently
+  of the PRD stakeholder `approver`. `unconfirmed` is allowed and is not
+  missing PRD approval. If an unconfirmed authority prevents resolution of
+  a named blocking activity, report that activity-specific BLOCKER. If the
+  authority description is not actionable, report a WARNING; uncertainty
+  by itself is not a defect. Do not require a stakeholder role for it.
+- Legacy questions without `decision` still use open-question hygiene above.
+  Guard checks whether blocked phase slugs exist; Curator checks what the
+  listed activities mean and whether their blocking scope is supported.
+  An unsupported blocking claim that prevents no stated requirement is a
+  WARNING; ask the author to explain or narrow its scope.
+
 ## Severity Calibration
 
 | Finding type | Severity |
@@ -78,6 +104,10 @@ Steps 2–3 (Evaluate, Self-Check) per Phased Process Skeleton in
 | Evidence artifact with no retention requirement | BLOCKER |
 | No provenance requirement for evidence submission | BLOCKER |
 | Unresolved `open-questions` entry that blocks a stated requirement | BLOCKER |
+| Open decision prevents a stated requirement or its named activity pending authority confirmation | BLOCKER (activity-scoped) |
+| Resolved decision does not answer the original question or explain the choice | WARNING |
+| Decision authority description is not actionable | WARNING |
+| Decision claims unsupported blocking scope without preventing a stated requirement | WARNING |
 | Non-repudiation relevant but not addressed | WARNING |
 | Bulk submission with weaker audit requirements than manual | WARNING |
 | Hardcoded control IDs in a Draft PRD | WARNING |

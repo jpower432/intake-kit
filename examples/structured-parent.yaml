@@ -1,0 +1,56 @@
+header:
+  schema-version: 0.3.0
+  version: 1.0.0
+  last-updated: '2026-11-13'
+slug: structured
+title: Structured requirements review
+description: |
+  Requirements authors need to record decisions and delivery scope so that
+  reviewers can understand a PRD without reconstructing meeting notes.
+features: [unbound-force/intake-kit#14]
+stakeholders:
+  - {role: Product Owner, handle: '@requirements-owner', approver: true}
+job-executors:
+  - id: author
+    label: Requirements author
+    core-job: Maintain requirements that reviewers can assess independently.
+desired-outcomes:
+  - id: DO-SR-001
+    statement: Minimize time spent reconstructing decision context during review.
+    executor-id: author
+nonfunctional-requirements:
+  - id: NFR-SR-001
+    title: Review without a meeting
+    description: A reviewer can identify the reason for a decision from the PRD.
+    satisfies: [DO-SR-001]
+feature-mappings:
+  - feature: unbound-force/intake-kit#14
+    fr-ids: [FR-SR-001]
+    allocation-status: unconfirmed
+    evidence: The phase proposes decision capture; the owner has not confirmed allocation.
+lifecycle:
+  diagram: |
+    stateDiagram-v2
+      Draft --> Ready: Full council and author confirmation
+      Ready --> Approved: Human sign-off
+  description: |
+    Draft requirements mature before a full council review. The author
+    confirms the move to **Ready**; a human records approval separately.
+reading-guide: |
+  Read the outcomes first, then the [decision-capture phase](structured-phase.yaml).
+  The glossary defines the distinction between authority and PRD approval.
+glossary:
+  - term: Operational authority
+    definition: The person or group entitled to resolve a particular decision.
+  - term: PRD approver
+    definition: A stakeholder designated to sign off on the requirements document.
+open-questions:
+  - question: Who will own glossary maintenance after the first release?
+    context: The product owner will assign a maintainer during the handoff.
+    decision:
+      id: DEC-SR-001
+      status: Open
+      blocks: []
+      authority:
+        status: unconfirmed
+        description: Product owner; the maintenance contact still needs confirmation.

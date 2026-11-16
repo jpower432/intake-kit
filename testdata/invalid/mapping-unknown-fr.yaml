@@ -1,0 +1,13 @@
+header: {schema-version: 0.3.0, version: 1.0.0, last-updated: '2026-11-13', parent: structured}
+phase: Maintenance
+journeys:
+  - label: Maintain
+    executor: owner
+    steps: [{label: Edit, description: Edit content., implements: [FR-MFP-001]}]
+functional-requirements:
+  - {id: FR-MFP-001, title: Maintain content, satisfies: [], acceptance-criteria: []}
+feature-mappings:
+  - feature: FEATURE-1
+    fr-ids: [FR-MFP-002]
+    allocation-status: unconfirmed
+    evidence: Allocation awaiting confirmation.

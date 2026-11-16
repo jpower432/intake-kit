@@ -1,0 +1,14 @@
+header: {schema-version: 0.2.1, version: 1.0.0, last-updated: '2026-11-13', parent: structured}
+phase: Maintenance
+state:
+  status: Draft
+  remarks: |
+    Reading guide: start with the parent overview.
+    Metadata here remains opaque legacy prose.
+open-questions: []
+journeys:
+  - label: Maintain
+    executor: owner
+    steps: [{label: Edit, description: Edit content., implements: [FR-MFP-001]}]
+functional-requirements:
+  - {id: FR-MFP-001, title: Maintain content, satisfies: [], acceptance-criteria: []}

@@ -47,6 +47,12 @@ reaches `Ready` or `Approved`; optional at `Draft`).
    remaining errors — the CUE error output names the exact field.
 
 ### Added
+- Optional structured decisions, feature-to-FR mappings, lifecycle notes,
+  reading guides, glossaries, and phase-exit criteria for schema 0.3.0.
+  Existing kebab-case PRDs can omit these fields; legacy context and remarks
+  remain prose. See the README for migration and validation boundaries.
+- Structured parent/phase examples covering Markdown content, resolved
+  decisions, nonblocking questions, and references to shared requirements.
 - Two-tier stage-aware review: `/prd-review` (default) runs `cue vet` +
   Guard only against a `Draft` PRD; `/prd-review --full` runs the full
   five-agent council and gates `Draft → Ready`.
@@ -58,6 +64,11 @@ reaches `Ready` or `Approved`; optional at `Draft`).
   Apache-2.0).
 
 ### Changed
+- Guard checks family-level mapping, exit-requirement, and blocked-phase
+  references. Curator distinguishes retained resolutions, operational
+  authority, and activity-specific blocking from PRD approval.
+- Schema fixtures now require expected diagnostics, so unrelated validation
+  errors cannot count as the intended rejection.
 - `/prd-review` default behavior: previously always ran the full 5-agent
   council; now runs `cue vet` + Guard only unless `--full` is passed. Pass
   `--full` to get the prior behavior and the `Draft → Ready` gate.

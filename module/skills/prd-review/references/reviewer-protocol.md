@@ -18,11 +18,11 @@ row, don't flag it — the owning agent will.
 
 | Domain | Owner |
 |---|---|
-| Executor/outcome/ID/journey consistency, feature traceability, scope/value coherence | Guard |
+| Executor/outcome/ID/journey consistency, feature traceability and mappings, family reference integrity (including exit requirements and blocked phase slugs), scope/value coherence | Guard |
 | Auth boundaries, credential scope, trust model, ambiguity hiding a security decision | Adversary |
 | Behavioral language, testability, AC quality, technology-naming-as-implementation-choice | Tester |
 | Deployment, environment, and connectivity assumptions | Operator |
-| Evidence capture, audit trail, retention, provenance, open-question/dependency hygiene | Curator |
+| Evidence capture, audit trail, retention, provenance, open-question/dependency hygiene, decision authority/resolutions/activity-specific blocking | Curator |
 
 This table is the single source of truth for cross-agent boundaries. Each
 agent's own Out of Scope section states only the boundary cases specific

@@ -128,6 +128,18 @@ Also extract, for convenience during Dispatch and Synthesis:
 
 - **Parent**: `title`, `slug`, `description`, `job-executors`, `nonfunctional-requirements`, `desired-outcomes`, `features`, `stakeholders`, `open-questions` (each with its own `context`, if present)
 - **Each phase**: `phase`, `state`, `journeys`, `functional-requirements` (with ACs), `dependencies`, and `features` if this phase file declares its own (see the Feature Traceability note in Phase 3's Guard row — `features` isn't parent-exclusive)
+- **Every document, when present**: `slug`, `feature-mappings` (feature,
+  FR IDs, allocation status, evidence), `lifecycle.diagram`,
+  `lifecycle.description`, `reading-guide`, `glossary`, and `open-questions`
+  with original question/context and all `decision` fields (ID, status,
+  blocks, authority, resolution, rationale).
+- **Phase exit conditions, when present**: `phase-exit-criteria` descriptions
+  and their `requirement-ids`. Keep references to parent NFRs for Guard's
+  family-level checks; local CUE validation cannot resolve inheritance.
+
+Narrative fields and feature mappings may occur on parent or phase PRDs.
+Only `phase-exit-criteria` is phase-only. Narrative metadata adds reading
+context; requirements and their canonical IDs remain the behavioral contract.
 
 Note the PRD `state.status` for use in Phase 2's stage selection.
 
@@ -166,11 +178,11 @@ Hand each agent the PRD context, file paths, and
 
 | Agent | File | Reviews |
 |---|---|---|
-| Guard | `module/agents/prd-guard.md` | Intent fidelity, scope discipline, executor/ID/journey integrity, FR-to-value traceability |
+| Guard | `module/agents/prd-guard.md` | Intent fidelity, scope discipline, executor/ID/journey integrity, feature mappings, family reference integrity, FR-to-value traceability |
 | Adversary | `module/agents/prd-adversary.md` | Security gaps + ambiguity/completeness |
 | Tester | `module/agents/prd-tester.md` | Behavioral language, testability, AC quality |
 | Operator | `module/agents/prd-operator.md` | Deployment/environment/connectivity assumptions |
-| Curator | `module/agents/prd-curator.md` | Evidence capture, audit trail, retention, provenance, open-question hygiene |
+| Curator | `module/agents/prd-curator.md` | Evidence capture, audit trail, retention, provenance, open-question hygiene, decision authority/resolutions/activity-specific blocking |
 
 `features` is not parent-exclusive — a phase file may declare its own
 `features` list too. Guard's Feature Traceability Grounding runs against
@@ -210,6 +222,18 @@ module script-free per `AGENTS.md`.
 ### Phase 5: Synthesis & Verdict
 
 Collect the findings that survived Verify. Group by severity:
+
+When reporting structured metadata findings, retain the decision ID, status,
+authority confirmation, and exact blocked phase/activity pair relevant to the
+finding. Resolved decisions are history; `blocks: []` creates no blocker.
+Retain mapping allocation status/evidence and exit requirement IDs in the
+finding's explanation. Structured requirement IDs are valid within-family
+references, including parent NFRs, and do not trigger Guard's prose warning.
+
+This skill emits a review report, not a rendered PRD. Read lifecycle diagrams,
+descriptions, reading guides, and glossary definitions as context. When quoted
+as evidence, preserve their raw YAML text per Phase 4; do not execute diagram
+source or convert Markdown before evidence verification.
 
 - **BLOCKER** — must be resolved before PRD advances to Ready
 - **WARNING** — author must respond with rationale to skip, or resolve

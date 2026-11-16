@@ -13,8 +13,9 @@ journeys:
     steps:
       - label: "Step one"
         description: "Step referencing a non-existent FR."
-        implements: [FR-NONEXISTENT-001]
+        implements: [FR-MFP-001, FR-NONEXISTENT-001]
 functional-requirements:
   - id: FR-MFP-001
     title: "Real functional requirement"
     satisfies: []
+    acceptance-criteria: []
